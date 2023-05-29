@@ -1,0 +1,16 @@
+{
+  "name": "VapConcept",
+  "version": "1.0.0",
+  "description": "App desktop pour l'arrivage automatique de VapConcept",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "electron": "^24.3.0",
+    "nedb": "^1.8.0"
+  }
+}
