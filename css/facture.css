@@ -1,0 +1,35 @@
+.inputFormBtn {
+  background-color: #24b9d7;
+  color: #000000;
+  border: none;
+  border-radius: 5px;
+  padding: 10px;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.inputFormBtn:hover {
+  background-color: #24b9d7;
+  color: #ffffff;
+}
+
+input[type="file"]::-webkit-file-upload-button {
+  border: none;
+  background-color: #24b9d7;
+  color: #000000;
+  border-radius: 5px;
+  padding: 10px;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+input[type="file"]::-webkit-file-upload-button:hover {
+  background-color: #24b9d7;
+  color: #ffffff;
+}
+
+.infoFile {
+  font-size: 1.5rem;
+}

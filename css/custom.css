@@ -8,7 +8,7 @@
   outline: none;
   background: transparent;
   margin: 0 5px;
-  color: #4e73df;
+  color: #c2a25c;
   -webkit-app-region: no-drag;
 }
 
@@ -37,4 +37,29 @@
 
 #dateSelector {
   text-align: center;
+}
+
+.linkInfo {
+  margin: 0 5px;
+  color: #c2a25c;
+  -webkit-app-region: no-drag;
+}
+
+.linkInfo:hover {
+  color: #785814;
+}
+
+.info {
+  color: black;
+  text-align: start;
+  margin: 0 5px;
+}
+
+.smile {
+  color: black;
+  -webkit-app-region: no-drag;
+}
+
+.text-black {
+  color: black;
 }
