@@ -24,6 +24,7 @@
     <!-- Custom styles for this template-->
     <link href="css/sb-admin-2.css" rel="stylesheet" />
     <link href="css/custom.css" rel="stylesheet" />
+    <link href="css/arrivage.css" rel="stylesheet" />
   </head>
 
   <body id="page-top">
@@ -141,6 +142,32 @@
             <h1 class="h3 mb-5 text-black">Arrivage automatique Hiboutik</h1>
 
             <!-- Content Row -->
+            <table class="table table-striped" id="tableRegistre">
+              <hr />
+              <thead>
+                <tr>
+                  <th><i class="fa fa-folder pr-2"></i> Référence</th>
+                  <th><i class="fa fa-euro-sign pr-2"></i> Prix Unitaire</th>
+                  <th><i class="fa fa-list pr-2"></i> Quantité</th>
+                  <th><i class="fa fa-euro-sign pr-2"></i> Prix</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+            <div class="fa-pull-left totalArrivage" id="totalArrivage">
+              <i class="fa fa-euro-sign pr-2"></i>
+            </div>
+            <div class="pull-right">
+              <button
+                type="button"
+                class="btn btn-success"
+                id="btnFacture"
+                data-toggle="modal"
+                data-target="#factureModal"
+              >
+                <i class="fa fa-file-invoice-dollar pr-2"></i> Exportez Arrivage
+              </button>
+            </div>
           </div>
         </div>
         <!-- End of Main Content -->
@@ -149,7 +176,10 @@
         <footer class="sticky-footer bg-white">
           <div class="container my-auto">
             <div class="copyright text-center my-auto">
-              <span>copyright@ 2023 - Jules Cynamon - Vap Concept</span>
+              <span
+                ><i class="fa fa-copyright pr-2"></i> copyright 2023 - Jules
+                Cynamon - Vap Concept</span
+              >
             </div>
           </div>
         </footer>

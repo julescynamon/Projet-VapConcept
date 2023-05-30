@@ -33,3 +33,11 @@ input[type="file"]::-webkit-file-upload-button:hover {
 .infoFile {
   font-size: 1.5rem;
 }
+
+.totalFact {
+  font-size: 1.5rem;
+  font-weight: bold;
+  border: #24b9d7 1px solid;
+  border-radius: 5px;
+  padding: 10px;
+}
