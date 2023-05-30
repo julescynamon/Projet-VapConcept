@@ -1,5 +1,7 @@
+const XLSX = require("xlsx");
+
 // Sélectionnez le formulaire et ajoutez un écouteur d'événements 'submit'
-const form = document.getElementById("csv-form");
+const form = document.getElementById("xlsx-form");
 form.addEventListener("submit", handleFormSubmit);
 
 function handleFormSubmit(event) {
@@ -23,7 +25,7 @@ function handleFormSubmit(event) {
 
     // Convertissez le .xlsx en JSON
     const json = xlsxToJson(xlsxContent);
-
+    console.log(json);
     // Sauvegardez le JSON dans votre base de données
     saveToDatabase(json);
   };
@@ -31,14 +33,15 @@ function handleFormSubmit(event) {
 }
 
 function xlsxToJson(xlsxContent) {
-  // Implémentez la conversion de .xlsx en JSON ici
-  const XLSX = require("xlsx");
+  // Utilisez SheetJS pour lire le contenu du fichier .xlsx
+  const workbook = XLSX.read(xlsxContent, { type: "buffer" });
 
-  const workbook = XLSX.readFile("fichier.xlsx");
-  const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-  const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+  // Convertissez la première feuille de calcul en JSON
+  const sheetName = workbook.SheetNames[0];
+  const worksheet = workbook.Sheets[sheetName];
+  const json = XLSX.utils.sheet_to_json(worksheet);
 
-  console.log(jsonData);
+  return json;
 }
 
 function saveToDatabase(json) {
