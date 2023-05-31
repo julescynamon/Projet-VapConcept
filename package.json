@@ -12,6 +12,7 @@
   "dependencies": {
     "electron": "^24.3.0",
     "nedb": "^1.8.0",
+    "papaparse": "^5.4.1",
     "xlsx": "^0.18.5"
   }
 }
