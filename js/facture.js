@@ -1,9 +1,5 @@
-const XLSX = require("xlsx");
-const path = require("path");
-const fs = require("fs");
-
 // Sélectionnez le formulaire et ajoutez un écouteur d'événements 'submit'
-const form = document.getElementById("xlsx-form");
+const form = document.getElementById("csv-form");
 form.addEventListener("submit", handleFormSubmit);
 
 function handleFormSubmit(event) {
@@ -15,7 +11,7 @@ function handleFormSubmit(event) {
 
   // Vérifiez si un fichier a été sélectionné
   if (!file) {
-    document.getElementById("bdd-error").textContent =
+    document.getElementById("facture-error").textContent =
       "Aucun fichier sélectionné";
     return;
   }
@@ -23,43 +19,31 @@ function handleFormSubmit(event) {
   // Lisez le contenu du fichier .xlsx
   const reader = new FileReader();
   reader.onload = function (e) {
-    const xlsxContent = e.target.result;
+    const csvContent = e.target.result;
 
     // Convertissez le .xlsx en JSON
-    const json = xlsxToJson(xlsxContent);
+    const json = csvToJson(csvContent);
     console.log(json);
 
     try {
       // Supprimez l'ancien fichier bdd.json s'il existe
-      const bddPath = path.join(__dirname, "bdd.json");
-      if (fs.existsSync(bddPath)) {
-        fs.unlinkSync(bddPath);
+      const facturePath = path.join(__dirname, "facture.json");
+      if (fs.existsSync(facturePath)) {
+        fs.unlinkSync(facturePath);
       }
 
       // Créez un nouveau fichier bdd.json avec le contenu JSON
-      fs.writeFileSync(bddPath, JSON.stringify(json));
+      fs.writeFileSync(facturePath, JSON.stringify(json));
 
       // Affichez un message à l'utilisateur pour indiquer que la base de données a bien été importée
-      document.getElementById("bdd-success").textContent =
+      document.getElementById("facture-success").textContent =
         "La base de données a bien été importée";
     } catch (error) {
       // Affichez un message d'erreur à l'utilisateur
-      document.getElementById("bdd-error").textContent =
+      document.getElementById("facture-error").textContent =
         "Une erreur s'est produite lors de l'importation de la base de données";
       console.error(error);
     }
   };
   reader.readAsArrayBuffer(file);
-}
-
-function xlsxToJson(xlsxContent) {
-  // Utilisez SheetJS pour lire le contenu du fichier .xlsx
-  const workbook = XLSX.read(xlsxContent, { type: "buffer" });
-
-  // Convertissez la première feuille de calcul en JSON
-  const sheetName = workbook.SheetNames[0];
-  const worksheet = workbook.Sheets[sheetName];
-  const json = XLSX.utils.sheet_to_json(worksheet);
-
-  return json;
 }
