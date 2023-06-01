@@ -31,14 +31,13 @@ function handleFormSubmit(event) {
 
     try {
       // Supprimez l'ancien fichier facture.json s'il existe
-      const facturePath = path.join(__dirname, "facture.json");
+      const facturePath = path.join(__dirname, "facture.db");
       if (fs.existsSync(facturePath)) {
         fs.unlinkSync(facturePath);
       }
 
-      // Créez un nouveau fichier facture.json avec le contenu JSON
-      fs.writeFileSync(facturePath, JSON.stringify(json));
-
+      // créez un nouveau fichier facture.db
+      ipc.send("factureImport", json);
       // Affichez un message à l'utilisateur pour indiquer que la facture a bien été importée
       document.getElementById("facture-success").textContent =
         "La base de données a bien été importée";
