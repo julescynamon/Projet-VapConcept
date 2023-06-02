@@ -66,7 +66,14 @@ function displayFactureData(csvContent) {
       const key = "field" + (j + 1);
       object[key] = currentLine[j];
     }
-
+    // Si la dernière ligne est vide, ne l'ajoutez pas au tableau
+    if (
+      i === lines.length - 1 &&
+      currentLine.length === 1 &&
+      currentLine[0] === ""
+    ) {
+      continue;
+    }
     jsonData.push(object);
   }
 
@@ -95,7 +102,8 @@ function displayFactureData(csvContent) {
     tbody.appendChild(tr);
   }
 
-  // on affiche le total de la facture dans l'élément HTML #totalFact et on calcule le total en utilisant les données du field4
+  console.log(jsonData[0].field4);
+  // on récupère le prix total de la facture
   const totalFact = document.getElementById("totalFact");
   totalFact.innerHTML = "";
   let total = 0;
@@ -103,5 +111,6 @@ function displayFactureData(csvContent) {
     total += parseFloat(jsonData[i].field4);
     console.log(total);
   }
-  totalFact.innerHTML = total;
+  total = total.toFixed(2);
+  totalFact.textContent = "€ " + total;
 }
