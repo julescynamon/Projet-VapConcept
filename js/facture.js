@@ -25,38 +25,83 @@ function handleFormSubmit(event) {
   reader.onload = function (e) {
     const csvContent = e.target.result;
 
-    // Convertissez le .csv en JSON
-    const json = csvToJson(csvContent);
-    console.log(json);
-
     try {
-      // Supprimez l'ancien fichier facture.json s'il existe
-      const facturePath = path.join(__dirname, "facture.db");
+      // Supprimez l'ancien fichier facture.csv s'il existe
+      const facturePath = path.join(__dirname, "facture.csv");
       if (fs.existsSync(facturePath)) {
         fs.unlinkSync(facturePath);
       }
 
-      // créez un nouveau fichier facture.db
-      ipc.send("factureImport", json);
-      // Affichez un message à l'utilisateur pour indiquer que la facture a bien été importée
+      // Créez un nouveau fichier facture.csv avec le contenu CSV
+      fs.writeFileSync(facturePath, csvContent);
+
+      // Affichez un message à l'utilisateur pour indiquer que la base de données a bien été importée
       document.getElementById("facture-success").textContent =
         "La base de données a bien été importée";
+
+      // Affichez les données de la facture dans un tableau
+      displayFactureData(csvContent);
     } catch (error) {
       // Affichez un message d'erreur à l'utilisateur
       document.getElementById("facture-error").textContent =
-        "Une erreur s'est produite lors de l'importation de la facture";
+        "Une erreur s'est produite lors de l'importation de la base de données";
       console.error(error);
     }
   };
   reader.readAsText(file);
 }
 
-function csvToJson(csvContent) {
-  // Utilisez PapaParse pour lire le contenu du fichier .csv
-  const parsedData = Papa.parse(csvContent, { header: true });
+// on réxupère les données de la facture et on les affiches dans le tableau
+function displayFactureData(csvContent) {
+  const csvData = csvContent;
+  const lines = csvData.split("\n");
 
-  // Récupérez les données JSON
-  const json = parsedData.data;
+  const jsonData = [];
 
-  return json;
+  for (let i = 0; i < lines.length; i++) {
+    const currentLine = lines[i].split(";");
+    const object = {};
+
+    for (let j = 0; j < currentLine.length; j++) {
+      const key = "field" + (j + 1);
+      object[key] = currentLine[j];
+    }
+
+    jsonData.push(object);
+  }
+
+  console.log(jsonData);
+
+  const tbody = document.getElementById("facture-table");
+  tbody.innerHTML = "";
+  // Créez les lignes du tableau avec les données de la facture
+  for (let i = 0; i < jsonData.length; i++) {
+    const tr = document.createElement("tr");
+    const td1 = document.createElement("td");
+    const td2 = document.createElement("td");
+    const td3 = document.createElement("td");
+    const td4 = document.createElement("td");
+
+    td1.textContent = jsonData[i].field1;
+    td2.textContent = jsonData[i].field2;
+    td3.textContent = jsonData[i].field3;
+    td4.textContent = jsonData[i].field4;
+
+    tr.appendChild(td1);
+    tr.appendChild(td2);
+    tr.appendChild(td3);
+    tr.appendChild(td4);
+
+    tbody.appendChild(tr);
+  }
+
+  // on affiche le total de la facture dans l'élément HTML #totalFact et on calcule le total en utilisant les données du field4
+  const totalFact = document.getElementById("totalFact");
+  totalFact.innerHTML = "";
+  let total = 0;
+  for (let i = 0; i < jsonData.length; i++) {
+    total += parseFloat(jsonData[i].field4);
+    console.log(total);
+  }
+  totalFact.innerHTML = total;
 }
