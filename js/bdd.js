@@ -1,4 +1,3 @@
-const XLSX = require("xlsx");
 const path = require("path");
 const fs = require("fs");
 
@@ -25,19 +24,15 @@ function handleFormSubmit(event) {
   reader.onload = function (e) {
     const xlsxContent = e.target.result;
 
-    // Convertissez le .xlsx en JSON
-    const json = xlsxToJson(xlsxContent);
-    console.log(json);
-
     try {
       // Supprimez l'ancien fichier bdd.json s'il existe
-      const bddPath = path.join(__dirname, "bdd.json");
+      const bddPath = path.join(__dirname, "bdd.xlsx");
       if (fs.existsSync(bddPath)) {
         fs.unlinkSync(bddPath);
       }
 
       // Créez un nouveau fichier bdd.json avec le contenu JSON
-      fs.writeFileSync(bddPath, JSON.stringify(json));
+      fs.writeFileSync(bddPath, xlsxContent);
 
       // Affichez un message à l'utilisateur pour indiquer que la base de données a bien été importée
       document.getElementById("bdd-success").textContent =
@@ -49,17 +44,5 @@ function handleFormSubmit(event) {
       console.error(error);
     }
   };
-  reader.readAsArrayBuffer(file);
-}
-
-function xlsxToJson(xlsxContent) {
-  // Utilisez SheetJS pour lire le contenu du fichier .xlsx
-  const workbook = XLSX.read(xlsxContent, { type: "buffer" });
-
-  // Convertissez la première feuille de calcul en JSON
-  const sheetName = workbook.SheetNames[0];
-  const worksheet = workbook.Sheets[sheetName];
-  const json = XLSX.utils.sheet_to_json(worksheet);
-
-  return json;
+  reader.readAsText(file);
 }
