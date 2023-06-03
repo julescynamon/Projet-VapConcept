@@ -142,11 +142,15 @@
             <h1 class="h3 mb-5 text-black">Arrivage automatique Hiboutik</h1>
 
             <!-- Content Row -->
+            <div class="fa-pull-right totalArrivage m-4" id="totalArrivage">
+              <i class="fa fa-euro-sign pr-2"></i>
+            </div>
             <table class="table table-striped" id="tableRegistre">
               <hr />
               <thead>
                 <tr>
                   <th><i class="fa fa-folder pr-2"></i> Référence</th>
+                  <th><i class="fa fa-newspaper pr-2"></i> Désignation</th>
                   <th><i class="fa fa-euro-sign pr-2"></i> Prix Unitaire</th>
                   <th><i class="fa fa-list pr-2"></i> Quantité</th>
                   <th><i class="fa fa-euro-sign pr-2"></i> Prix</th>
@@ -154,15 +158,12 @@
               </thead>
               <tbody></tbody>
             </table>
-            <div class="fa-pull-left totalArrivage" id="totalArrivage">
-              <i class="fa fa-euro-sign pr-2"></i>
-            </div>
             <div class="pull-right">
               <button
                 type="button"
                 class="btn btn-success"
                 id="btnFacture"
-                data-toggle="modal"
+                disabled
                 data-target="#factureModal"
               >
                 <i class="fa fa-file-invoice-dollar pr-2"></i> Exportez Arrivage
@@ -208,5 +209,6 @@
     <!-- Custom scripts for all pages-->
     <script src="js/sb-admin-2.min.js"></script>
     <script src="./js/app.js"></script>
+    <script src="./js/arrivage.js"></script>
   </body>
 </html>

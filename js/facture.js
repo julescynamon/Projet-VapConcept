@@ -27,7 +27,7 @@ function handleFormSubmit(event) {
 
     try {
       // Supprimez l'ancien fichier facture.csv s'il existe
-      const facturePath = path.join(__dirname, "facture.csv");
+      const facturePath = path.join(__dirname, "/documents/facture.csv");
       if (fs.existsSync(facturePath)) {
         fs.unlinkSync(facturePath);
       }
@@ -66,6 +66,14 @@ function displayFactureData(csvContent) {
       const key = "field" + (j + 1);
       object[key] = currentLine[j];
     }
+
+    // on récupère le prix unitaire et on l'ajoute au tableau
+    const field3 = parseFloat(currentLine[2]);
+    const field4 = parseFloat(currentLine[3]);
+    if (!isNaN(field3) && !isNaN(field4) && field3 !== 0) {
+      const division = (field4 / field3).toFixed(2);
+      object["division"] = division;
+    }
     // Si la dernière ligne est vide, ne l'ajoutez pas au tableau
     if (
       i === lines.length - 1 &&
@@ -77,7 +85,19 @@ function displayFactureData(csvContent) {
     jsonData.push(object);
   }
 
+  // on crèe un fichier json avec les données de la facture
+  const factureModifPath = path.join(__dirname, "/documents/facture.json");
+  if (fs.existsSync(factureModifPath)) {
+    fs.unlinkSync(factureModifPath);
+  }
+  fs.writeFileSync(factureModifPath, JSON.stringify(jsonData));
+  console.log("fichier json créé : ", factureModifPath);
+
   console.log(jsonData);
+  // on récupère le tableau et on lui ajoute un champs supplementaire qui est le prix unitaire
+  for (let i = 0; i < jsonData.length; i++) {
+    const singlePrice = jsonData[i].field4 / jsonData[i].field3;
+  }
 
   const tbody = document.getElementById("facture-table");
   tbody.innerHTML = "";
@@ -88,28 +108,29 @@ function displayFactureData(csvContent) {
     const td2 = document.createElement("td");
     const td3 = document.createElement("td");
     const td4 = document.createElement("td");
+    const td5 = document.createElement("td");
 
     td1.textContent = jsonData[i].field1;
     td2.textContent = jsonData[i].field2;
     td3.textContent = jsonData[i].field3;
     td4.textContent = jsonData[i].field4;
+    td5.textContent = jsonData[i].division;
 
     tr.appendChild(td1);
     tr.appendChild(td2);
     tr.appendChild(td3);
     tr.appendChild(td4);
+    tr.appendChild(td5);
 
     tbody.appendChild(tr);
   }
 
-  console.log(jsonData[0].field4);
   // on récupère le prix total de la facture
   const totalFact = document.getElementById("totalFact");
   totalFact.innerHTML = "";
   let total = 0;
   for (let i = 0; i < jsonData.length; i++) {
     total += parseFloat(jsonData[i].field4);
-    console.log(total);
   }
   total = total.toFixed(2);
   totalFact.textContent = "€ " + total;

@@ -26,7 +26,7 @@ function handleFormSubmit(event) {
 
     try {
       // Supprimez l'ancien fichier bdd.json s'il existe
-      const bddPath = path.join(__dirname, "bdd.xlsx");
+      const bddPath = path.join(__dirname, "/documents/bdd.xlsx");
       if (fs.existsSync(bddPath)) {
         fs.unlinkSync(bddPath);
       }
