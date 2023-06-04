@@ -1,4 +1,3 @@
-const Papa = require("papaparse");
 const path = require("path");
 const fs = require("fs");
 
@@ -71,8 +70,8 @@ function displayFactureData(csvContent) {
     const field3 = parseFloat(currentLine[2]);
     const field4 = parseFloat(currentLine[3]);
     if (!isNaN(field3) && !isNaN(field4) && field3 !== 0) {
-      const division = (field4 / field3).toFixed(2);
-      object["division"] = division;
+      const unitPrice = (field4 / field3).toFixed(2);
+      object["unitPrice"] = unitPrice;
     }
     // Si la dernière ligne est vide, ne l'ajoutez pas au tableau
     if (
@@ -91,13 +90,6 @@ function displayFactureData(csvContent) {
     fs.unlinkSync(factureModifPath);
   }
   fs.writeFileSync(factureModifPath, JSON.stringify(jsonData));
-  console.log("fichier json créé : ", factureModifPath);
-
-  console.log(jsonData);
-  // on récupère le tableau et on lui ajoute un champs supplementaire qui est le prix unitaire
-  for (let i = 0; i < jsonData.length; i++) {
-    const singlePrice = jsonData[i].field4 / jsonData[i].field3;
-  }
 
   const tbody = document.getElementById("facture-table");
   tbody.innerHTML = "";
@@ -114,7 +106,7 @@ function displayFactureData(csvContent) {
     td2.textContent = jsonData[i].field2;
     td3.textContent = jsonData[i].field3;
     td4.textContent = jsonData[i].field4;
-    td5.textContent = jsonData[i].division;
+    td5.textContent = jsonData[i].unitPrice;
 
     tr.appendChild(td1);
     tr.appendChild(td2);
