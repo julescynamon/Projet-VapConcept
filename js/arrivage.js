@@ -112,20 +112,6 @@ const XLSX = require("xlsx");
 const workbook = XLSX.utils.book_new();
 const sheet = XLSX.utils.json_to_sheet(fact2);
 XLSX.utils.book_append_sheet(workbook, sheet, "Arrivage");
-XLSX.writeFile(workbook, "/documents/Arrivage.xlsx");
+XLSX.writeFile(workbook, "Arrivage.xlsx");
 const downloadArrivage = document.getElementById("btnArrivage");
 downloadArrivage.disabled = false;
-
-// lors du clique sur le bouton de téléchargement du fichier xlsx je supprime le fichier json et je désactive le bouton de téléchargement du fichier xlsx et j'exporte le fichier xlsx
-
-const downloadArrivage = async () => {
-  const response = await fetch(__dirname, "/Arrivage.xlsx");
-  const blob = await response.blob();
-  const url = window.URL.createObjectURL(new Blob([blob]));
-  const link = document.createElement("a");
-  link.href = url;
-  link.setAttribute("download", "your_file_name.xlsx");
-  document.body.appendChild(link);
-  link.click();
-  link.parentNode.removeChild(link);
-};
