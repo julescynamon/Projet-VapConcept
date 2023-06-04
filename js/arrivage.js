@@ -52,4 +52,43 @@ for (let i = 0; i < fact.length; i++) {
 
 console.log(fact);
 
+if (fs.existsSync(factureModifPath)) {
+  fs.unlinkSync(factureModifPath);
+}
 fs.writeFileSync(factureModifPath, JSON.stringify(fact));
+
+const tbody = document.getElementById("arrivage-table");
+tbody.innerHTML = "";
+// Créez les lignes du tableau avec les données de l'arrivage
+for (let i = 0; i < fact.length; i++) {
+  const tr = document.createElement("tr");
+  const td1 = document.createElement("td");
+  const td2 = document.createElement("td");
+  const td3 = document.createElement("td");
+  const td4 = document.createElement("td");
+  const td5 = document.createElement("td");
+
+  td1.textContent = fact[i].field1;
+  td2.textContent = fact[i].field2;
+  td3.textContent = fact[i].unitPrice;
+  td4.textContent = fact[i].field3;
+  td5.textContent = fact[i].field4;
+
+  tr.appendChild(td1);
+  tr.appendChild(td2);
+  tr.appendChild(td3);
+  tr.appendChild(td4);
+  tr.appendChild(td5);
+
+  tbody.appendChild(tr);
+}
+
+// on récupère le prix total de la facture
+const totalArrivage = document.getElementById("totalArrivage");
+totalArrivage.innerHTML = "";
+let total = 0;
+for (let i = 0; i < fact.length; i++) {
+  total += parseFloat(fact[i].field4);
+}
+total = total.toFixed(2);
+totalArrivage.textContent = "€ " + total;
