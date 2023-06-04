@@ -92,3 +92,40 @@ for (let i = 0; i < fact.length; i++) {
 }
 total = total.toFixed(2);
 totalArrivage.textContent = "€ " + total;
+
+// je cree un nouveau fichier json avec les données de l'arrivage sans la colonne "field4"
+const factureModifPath2 = path.join(__dirname, "/documents/facture2.json");
+const fact2 = [];
+for (let i = 0; i < fact.length; i++) {
+  const item = fact[i];
+  fact2.push({
+    field1: item.field1,
+    field3: item.field3,
+    unitPrice: item.unitPrice,
+  });
+}
+
+fs.writeFileSync(factureModifPath2, JSON.stringify(fact2));
+
+// Une fois l'affichage ok je convertit le fichier json en xlsx en supprimant la colonne "field4" et j'active le bouton de téléchargement du fichier xlsx
+const XLSX = require("xlsx");
+const workbook = XLSX.utils.book_new();
+const sheet = XLSX.utils.json_to_sheet(fact2);
+XLSX.utils.book_append_sheet(workbook, sheet, "Arrivage");
+XLSX.writeFile(workbook, "/documents/Arrivage.xlsx");
+const downloadArrivage = document.getElementById("btnArrivage");
+downloadArrivage.disabled = false;
+
+// lors du clique sur le bouton de téléchargement du fichier xlsx je supprime le fichier json et je désactive le bouton de téléchargement du fichier xlsx et j'exporte le fichier xlsx
+
+const downloadArrivage = async () => {
+  const response = await fetch(__dirname, "/Arrivage.xlsx");
+  const blob = await response.blob();
+  const url = window.URL.createObjectURL(new Blob([blob]));
+  const link = document.createElement("a");
+  link.href = url;
+  link.setAttribute("download", "your_file_name.xlsx");
+  document.body.appendChild(link);
+  link.click();
+  link.parentNode.removeChild(link);
+};
