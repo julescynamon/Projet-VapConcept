@@ -107,11 +107,29 @@ for (let i = 0; i < fact.length; i++) {
 
 fs.writeFileSync(factureModifPath2, JSON.stringify(fact2));
 
-// Une fois l'affichage ok je convertit le fichier json en xlsx en supprimant la colonne "field4" et j'active le bouton de téléchargement du fichier xlsx
+// Une fois l'affichage ok je convertit le fichier json en xlsx
+
 const XLSX = require("xlsx");
 const workbook = XLSX.utils.book_new();
 const sheet = XLSX.utils.json_to_sheet(fact2);
 XLSX.utils.book_append_sheet(workbook, sheet, "Arrivage");
 XLSX.writeFile(workbook, "Arrivage.xlsx");
-const downloadArrivage = document.getElementById("btnArrivage");
-downloadArrivage.disabled = false;
+
+// Une fois l'affichage ok je convertit le fichier json en xlsx en supprimant la colonne "field4" et j'active le bouton de téléchargement du fichier xlsx
+const { download } = require("electron-dl");
+
+const downloadButton = document.getElementById("btnArrivage");
+downloadButton.disabled = false;
+downloadButton.addEventListener("click", () => {
+  const url = path.join(__dirname, "/Arrivage.xlsx"); // Remplacez par l'URL réelle du fichier .xlsx
+  const options = {
+    directory: path.join(__dirname, "/desktop/"), // Remplacez par le chemin de destination souhaité
+    filename: "Arrivage.xlsx", // Remplacez par le nom souhaité pour le fichier
+  };
+
+  download(BrowserWindow.getFocusedWindow(), url, options)
+    .then((dl) => {
+      console.log("Fichier téléchargé avec succès :", dl.getSavePath());
+    })
+    .catch(console.error);
+});

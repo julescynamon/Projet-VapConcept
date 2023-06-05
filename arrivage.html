@@ -65,7 +65,7 @@
 
         <!-- Nav Item - Base de données Hiboutik -->
         <li class="nav-item">
-          <a class="nav-link" href="bdd.html">
+          <a class="nav-link" href="factureAutre.html">
             <i class="fa fa-book"></i>
             <span>Base de données Hiboutik</span></a
           >
@@ -142,6 +142,16 @@
             <h1 class="h3 mb-5 text-black">Arrivage automatique Hiboutik</h1>
 
             <!-- Content Row -->
+            <div>
+              <button
+                type="button"
+                class="btn btn-success"
+                id="btnArrivage"
+                disabled
+              >
+                <i class="fa fa-file-invoice-dollar pr-2"></i> Exportez Arrivage
+              </button>
+            </div>
             <div class="fa-pull-right totalArrivage m-4" id="totalArrivage">
               <i class="fa fa-euro-sign pr-2"></i>
             </div>
@@ -158,16 +168,6 @@
               </thead>
               <tbody id="arrivage-table"></tbody>
             </table>
-            <div class="pull-right">
-              <button
-                type="button"
-                class="btn btn-success"
-                id="btnArrivage"
-                disabled
-              >
-                <i class="fa fa-file-invoice-dollar pr-2"></i> Exportez Arrivage
-              </button>
-            </div>
           </div>
         </div>
         <!-- End of Main Content -->

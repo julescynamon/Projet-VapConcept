@@ -43,20 +43,6 @@ function createWindow() {
       win.maximize();
     }
   });
-
-  // Manipulation de la base de donnéees
-  ipc.on("factureImport", (e, data) => {
-    const dataStore = require("nedb");
-    const db = new dataStore({ filename: "facture.db", autoload: true });
-    db.insert(data, (err, newRec) => {
-      if (err) {
-        console.log("erreur =", err);
-        return;
-      }
-      console.log("created =", newRec);
-      win.reload();
-    });
-  });
 }
 
 app.whenReady().then(() => {
