@@ -1,11 +1,13 @@
 const path = require("path");
 const fs = require("fs");
 
-// je récupère mon fichier json
-const factureModifPath = path.join(__dirname, "/documents/facture.json");
-// je le convertit en objet javascript
+// Get the path to the facture.json file using path.join()
+const factureModifPath = path.join(__dirname, "documents", "facture.json");
+
+// Read the facture.json file and parse it as a JavaScript object
 const fact = JSON.parse(fs.readFileSync(factureModifPath, "utf8"));
 
+// Define the replacements object
 const replacements = {
   "par 10": 10,
   "10 pièces": 10,
@@ -36,6 +38,7 @@ const replacements = {
   "2 pieces": 2,
 };
 
+// Replace the strings in fact[i].field2 with their corresponding multipliers
 for (let i = 0; i < fact.length; i++) {
   const item = fact[i];
   for (const [string, multiplier] of Object.entries(replacements)) {
@@ -45,21 +48,23 @@ for (let i = 0; i < fact.length; i++) {
   }
 }
 
+// Calculate the unit price for each item in fact
 for (let i = 0; i < fact.length; i++) {
   const item = fact[i];
   item.unitPrice = (parseFloat(item.field4) / parseInt(item.field3)).toFixed(2);
 }
 
-console.log(fact);
-
+// Write the modified facture.json file back to disk
 if (fs.existsSync(factureModifPath)) {
   fs.unlinkSync(factureModifPath);
 }
 fs.writeFileSync(factureModifPath, JSON.stringify(fact));
 
+// Get the tbody element and clear its contents
 const tbody = document.getElementById("arrivage-table");
 tbody.innerHTML = "";
-// Créez les lignes du tableau avec les données de l'arrivage
+
+// Create a table row for each item in fact and append it to the tbody element
 for (let i = 0; i < fact.length; i++) {
   const tr = document.createElement("tr");
   const td1 = document.createElement("td");
@@ -83,7 +88,7 @@ for (let i = 0; i < fact.length; i++) {
   tbody.appendChild(tr);
 }
 
-// on récupère le prix total de la facture
+// Get the totalArrivage element and calculate the total price of the facture
 const totalArrivage = document.getElementById("totalArrivage");
 totalArrivage.innerHTML = "";
 let total = 0;
@@ -93,8 +98,8 @@ for (let i = 0; i < fact.length; i++) {
 total = total.toFixed(2);
 totalArrivage.textContent = "€ " + total;
 
-// je cree un nouveau fichier json avec les données de l'arrivage sans la colonne "field4"
-const factureModifPath2 = path.join(__dirname, "/documents/facture2.json");
+// Create a new facture2.json file with the modified data from facture.json
+const factureModifPath2 = path.join(__dirname, "documents", "facture2.json");
 const fact2 = [];
 for (let i = 0; i < fact.length; i++) {
   const item = fact[i];
@@ -104,32 +109,35 @@ for (let i = 0; i < fact.length; i++) {
     unitPrice: item.unitPrice,
   });
 }
-
 fs.writeFileSync(factureModifPath2, JSON.stringify(fact2));
 
-// Une fois l'affichage ok je convertit le fichier json en xlsx
-
+// Create an XLSX file from the data in facture2.json
 const XLSX = require("xlsx");
 const workbook = XLSX.utils.book_new();
 const sheet = XLSX.utils.json_to_sheet(fact2);
 XLSX.utils.book_append_sheet(workbook, sheet, "Arrivage");
-XLSX.writeFile(workbook, "Arrivage.xlsx");
+XLSX.writeFile(workbook, path.join(__dirname, "Arrivage.xlsx"));
 
-// Une fois l'affichage ok je convertit le fichier json en xlsx en supprimant la colonne "field4" et j'active le bouton de téléchargement du fichier xlsx
-const { download } = require("electron-dl");
-
+// Enable the download button for the XLSX file
 const downloadButton = document.getElementById("btnArrivage");
 downloadButton.disabled = false;
-downloadButton.addEventListener("click", () => {
-  const url = path.join(__dirname, "/Arrivage.xlsx"); // Remplacez par l'URL réelle du fichier .xlsx
-  const options = {
-    directory: path.join(__dirname, "/desktop/"), // Remplacez par le chemin de destination souhaité
-    filename: "Arrivage.xlsx", // Remplacez par le nom souhaité pour le fichier
-  };
 
-  download(BrowserWindow.getFocusedWindow(), url, options)
-    .then((dl) => {
-      console.log("Fichier téléchargé avec succès :", dl.getSavePath());
-    })
-    .catch(console.error);
+// Create a download link for the XLSX file and set the download attribute to the user's desktop path
+downloadButton.addEventListener("click", () => {
+  const file = new Blob(
+    [fs.readFileSync(path.join(__dirname, "Arrivage.xlsx"))],
+    {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    }
+  );
+  const url = URL.createObjectURL(file);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = path.join(require("os").homedir(), "Desktop", "Arrivage.xlsx");
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => {
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+  }, 0);
 });
