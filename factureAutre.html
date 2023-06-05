@@ -24,7 +24,7 @@
     <!-- Custom styles for this template-->
     <link href="css/sb-admin-2.css" rel="stylesheet" />
     <link href="css/custom.css" rel="stylesheet" />
-    <link href="css/bdd.css" rel="stylesheet" />
+    <link href="css/facture.css" rel="stylesheet" />
   </head>
 
   <body id="page-top">
@@ -65,9 +65,9 @@
 
         <!-- Nav Item - Base de données Hiboutik -->
         <li class="nav-item">
-          <a class="nav-link" href="bdd.html">
+          <a class="nav-link" href="factureAutre.html">
             <i class="fa fa-book"></i>
-            <span>Base de données Hiboutik</span></a
+            <span>Facture Autre Fournisseurs</span></a
           >
         </li>
 
@@ -75,7 +75,7 @@
         <li class="nav-item">
           <a class="nav-link" href="facture.html">
             <i class="fa fa-file-invoice-dollar"></i>
-            <span>Facture</span></a
+            <span>Facture JPR</span></a
           >
         </li>
 
@@ -140,20 +140,20 @@
           <div class="container-fluid">
             <!-- Page Heading -->
             <h1 class="h3 mb-4 text-black text-center">
-              Base de données Hiboutik
+              Facture autre fournisseurs
             </h1>
-            <!-- Content Row -->
+
             <div class="row mt-5">
-              <h3 class="text-black">Importez la base de donnée ⤵️</h3>
+              <h3 class="text-black">Importez la Facture ⤵️</h3>
             </div>
-            <div class="row mt-5">
+            <div class="row mt-5 mb-5">
               <form
-                id="xlsx-form"
+                id="pdf-form"
                 action=""
                 method="post"
                 enctype="multipart/form-data"
               >
-                <input type="file" name="file" accept=".xlsx" />
+                <input type="file" name="file" accept=".pdf" />
                 <input
                   type="submit"
                   name="submit"
@@ -163,9 +163,26 @@
               </form>
             </div>
             <div class="mt-5 text-center">
-              <p class="text-success infoFile" id="bdd-success"></p>
-              <p class="text-danger infoFile" id="bdd-error"></p>
+              <p class="text-success infoFile" id="facture-success"></p>
+              <p class="text-danger infoFile" id="facture-error"></p>
             </div>
+            <div class="pull-right totalFact m-4" id="totalFact">
+              <i class="fa fa-euro-sign pr-2"></i>
+            </div>
+            <table class="table table-striped" id="tableRegistre">
+              <hr />
+              <thead>
+                <tr>
+                  <th><i class="fa fa-folder pr-2"></i> Référence</th>
+                  <th><i class="fa fa-newspaper pr-2"></i> Désignation</th>
+                  <th><i class="fa fa-list pr-2"></i> Quantité</th>
+                  <th><i class="fa fa-euro-sign pr-2"></i> Prix total</th>
+                  <th><i class="fa fa-euro-sign pr-2"></i> Prix Unitaire</th>
+                </tr>
+              </thead>
+              <tbody id="facture-table"></tbody>
+            </table>
+            <!-- Content Row -->
           </div>
         </div>
         <!-- End of Main Content -->
@@ -206,6 +223,6 @@
     <!-- Custom scripts for all pages-->
     <script src="js/sb-admin-2.min.js"></script>
     <script src="./js/app.js"></script>
-    <script src="./js/bdd.js"></script>
+    <script src="./js/factureAutre.js"></script>
   </body>
 </html>
