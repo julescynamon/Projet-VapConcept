@@ -34,16 +34,16 @@ function handleFormSubmit(event) {
       // Créez un nouveau fichier facture.csv avec le contenu CSV
       fs.writeFileSync(facturePath, csvContent);
 
-      // Affichez un message à l'utilisateur pour indiquer que la base de données a bien été importée
+      // Affichez un message à l'utilisateur pour indiquer que la facture a bien été importée
       document.getElementById("facture-success").textContent =
-        "La base de données a bien été importée";
+        "La facture a bien été importée";
 
       // Affichez les données de la facture dans un tableau
       displayFactureData(csvContent);
     } catch (error) {
       // Affichez un message d'erreur à l'utilisateur
       document.getElementById("facture-error").textContent =
-        "Une erreur s'est produite lors de l'importation de la base de données";
+        "Une erreur s'est produite lors de l'importation de la facture";
       console.error(error);
     }
   };
