@@ -12,6 +12,7 @@
   "dependencies": {
     "electron": "^24.3.0",
     "electron-dl": "^3.5.0",
+    "pdfjs-dist": "^3.7.107",
     "xlsx": "^0.18.5"
   }
 }
