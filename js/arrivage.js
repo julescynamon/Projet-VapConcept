@@ -159,3 +159,35 @@ downloadButton.addEventListener("click", () => {
     window.URL.revokeObjectURL(url);
   }, 0);
 });
+
+// une fois l'arrivage effectué on compare les references fournisseurs avec ceux dans le fichier bdd.xlsx et on affiche les references qui ne sont pas dans le fichier bdd.xlsx
+const bddPath = path.join(__dirname, "documents", "bdd.xlsx");
+const workbookBdd = XLSX.readFile(bddPath);
+const sheetBdd = workbookBdd.Sheets["BDD"];
+const bdd = XLSX.utils.sheet_to_json(sheetBdd);
+
+const refFournisseur = [];
+for (let i = 0; i < fact.length; i++) {
+  refFournisseur.push(fact[i].field1);
+}
+
+const refBdd = [];
+for (let i = 0; i < bdd.length; i++) {
+  refBdd.push(bdd[i].Référence);
+}
+
+const refNonTrouvees = [];
+for (let i = 0; i < refFournisseur.length; i++) {
+  if (!refBdd.includes(refFournisseur[i])) {
+    refNonTrouvees.push(refFournisseur[i]);
+  }
+}
+
+const refNonTrouveesPath = path.join(
+  __dirname,
+  "documents",
+  "refNonTrouvees.json"
+);
+fs.writeFileSync(refNonTrouveesPath, JSON.stringify(refNonTrouvees));
+
+console.log(refNonTrouvees);
