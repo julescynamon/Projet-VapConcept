@@ -44,13 +44,16 @@ async function convertPDFToJSON(pdfFile) {
       const rows = [];
       for (const item of pageItems) {
         const { str } = item;
-
+        console.log(str);
         // Exemple de modèle de facture avec des colonnes prédéfinies
         const columns = str.split("\n");
 
         if (columns.length >= 5) {
-          const [reference, designation, quantity, unitPrice, totalPrice] =
-            columns;
+          const reference = columns["Référence"];
+          const designation = columns["Désignation"];
+          const quantity = columns["Quantité"];
+          const unitPrice = columns["PU HT"];
+          const totalPrice = columns["Montant HT"];
 
           // Créer un objet JSON pour chaque ligne de la facture
           const invoiceRow = {
