@@ -17,10 +17,12 @@ link.addEventListener("click", (event) => {
 const form = document.getElementById("bdd-form");
 form.addEventListener("submit", handleFormSubmit);
 
+const csv = require("csvtojson");
+
 function handleFormSubmit(event) {
   event.preventDefault(); // Empêche le rechargement de la page
 
-  // Récupérez le fichier .xlsx sélectionné
+  // Récupérez le fichier .csv sélectionné
   const fileInput = event.target.elements.file;
   const file = fileInput.files[0];
 
@@ -31,24 +33,29 @@ function handleFormSubmit(event) {
     return;
   }
 
-  // Lisez le contenu du fichier .xlsx
+  // Lisez le contenu du fichier .csv
   const reader = new FileReader();
   reader.onload = function (e) {
-    const xlsxContent = e.target.result;
+    const csvContent = e.target.result;
 
     try {
-      // Supprimez l'ancien fichier bdd.xlsx s'il existe
-      const bddPath = path.join(__dirname, "/documents/bdd.xlsx");
-      if (fs.existsSync(bddPath)) {
-        fs.unlinkSync(bddPath);
-      }
+      // Convert the csv content to JSON
+      csv()
+        .fromString(csvContent)
+        .then((jsonContent) => {
+          // Supprimez l'ancien fichier bdd.json s'il existe
+          const bddPath = path.join(__dirname, "/documents/bdd.json");
+          if (fs.existsSync(bddPath)) {
+            fs.unlinkSync(bddPath);
+          }
 
-      // Créez un nouveau fichier bdd.json avec le contenu JSON
-      fs.writeFileSync(bddPath, xlsxContent);
+          // Créez un nouveau fichier bdd.json avec le contenu JSON
+          fs.writeFileSync(bddPath, JSON.stringify(jsonContent));
 
-      // Affichez un message à l'utilisateur pour indiquer que la base de données a bien été importée
-      document.getElementById("bdd-success").textContent =
-        "La base de données a bien été importée";
+          // Affichez un message à l'utilisateur pour indiquer que la base de données a bien été importée
+          document.getElementById("bdd-success").textContent =
+            "La base de données a bien été importée";
+        });
     } catch (error) {
       // Affichez un message d'erreur à l'utilisateur
       document.getElementById("bdd-error").textContent =

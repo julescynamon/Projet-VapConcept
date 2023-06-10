@@ -9,6 +9,10 @@ const fact = JSON.parse(fs.readFileSync(factureModifPath, "utf8"));
 
 // Define the replacements object
 const replacements = {
+  "par 20": 20,
+  "20pcs": 20,
+  "20 pièces": 20,
+  "20 pieces": 20,
   "par 10": 10,
   "10 pièces": 10,
   "10 pieces": 10,
@@ -161,10 +165,8 @@ downloadButton.addEventListener("click", () => {
 });
 
 // une fois l'arrivage effectué on compare les references fournisseurs avec ceux dans le fichier bdd.xlsx et on affiche les references qui ne sont pas dans le fichier bdd.xlsx
-const bddPath = path.join(__dirname, "documents", "bdd.xlsx");
-const workbookBdd = XLSX.readFile(bddPath);
-const sheetBdd = workbookBdd.Sheets["BDD"];
-const bdd = XLSX.utils.sheet_to_json(sheetBdd);
+const bddPath = path.join(__dirname, "documents", "bdd.json");
+const bdd = JSON.parse(fs.readFileSync(bddPath, "utf8"));
 
 const refFournisseur = [];
 for (let i = 0; i < fact.length; i++) {
@@ -173,9 +175,10 @@ for (let i = 0; i < fact.length; i++) {
 
 const refBdd = [];
 for (let i = 0; i < bdd.length; i++) {
-  refBdd.push(bdd[i].Référence);
+  refBdd.push(bdd[i].ref[" Fourn"]);
 }
 
+// on compare les deux tableaux et on affiche les references qui ne sont pas dans le fichier bdd.json
 const refNonTrouvees = [];
 for (let i = 0; i < refFournisseur.length; i++) {
   if (!refBdd.includes(refFournisseur[i])) {
@@ -188,6 +191,51 @@ const refNonTrouveesPath = path.join(
   "documents",
   "refNonTrouvees.json"
 );
-fs.writeFileSync(refNonTrouveesPath, JSON.stringify(refNonTrouvees));
 
-console.log(refNonTrouvees);
+const refNonTrouvees2 = [];
+for (let i = 0; i < fact.length; i++) {
+  const item = fact[i];
+  if (refNonTrouvees2.includes(item.field1)) {
+    continue;
+  }
+  if (!refBdd.includes(item.field1)) {
+    const newItem = {
+      ref: item.field1,
+      designation: item.field2,
+      quantite: item.field3,
+      prixUnitaire: item.unitPrice,
+      prixTotal: item.field4,
+    };
+    refNonTrouvees2.push(newItem);
+  }
+}
+
+fs.writeFileSync(refNonTrouveesPath, JSON.stringify(refNonTrouvees2));
+
+// Get the tbody element and clear its contents
+const tbody2 = document.getElementById("refNotFind-table");
+tbody2.innerHTML = "";
+
+// Create a table row for each item in fact and append it to the tbody element
+for (let i = 0; i < refNonTrouvees2.length; i++) {
+  const tr2 = document.createElement("tr");
+  const tdRef = document.createElement("td");
+  const tdDesign = document.createElement("td");
+  const tdUnit = document.createElement("td");
+  const tdQuantity = document.createElement("td");
+  const tdTotal = document.createElement("td");
+
+  tdRef.textContent = refNonTrouvees2[i].ref;
+  tdDesign.textContent = refNonTrouvees2[i].designation;
+  tdUnit.textContent = refNonTrouvees2[i].prixUnitaire;
+  tdQuantity.textContent = refNonTrouvees2[i].quantite;
+  tdTotal.textContent = refNonTrouvees2[i].prixTotal;
+
+  tr2.appendChild(tdRef);
+  tr2.appendChild(tdDesign);
+  tr2.appendChild(tdUnit);
+  tr2.appendChild(tdQuantity);
+  tr2.appendChild(tdTotal);
+
+  tbody2.appendChild(tr2);
+}
