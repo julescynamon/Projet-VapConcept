@@ -1,3 +1,5 @@
+const PDFParser = require("pdf2json");
+
 const pdfForm = document.getElementById("pdf-form");
 
 pdfForm.addEventListener("submit", async (event) => {
@@ -11,7 +13,6 @@ pdfForm.addEventListener("submit", async (event) => {
     return;
   }
 
-  const PDFParser = await import("pdf2json").then((module) => module.default);
   const convertPDFToJSON = (file) => {
     return new Promise((resolve, reject) => {
       const pdfParser = new PDFParser();
@@ -24,10 +25,10 @@ pdfForm.addEventListener("submit", async (event) => {
         const lines = textContent.split("\n");
 
         const jsonData = {
-          numero: lines[0],
-          date: lines[1],
-          client: lines[2],
-          totalHT: lines[3],
+          ref: lines[0],
+          designation: lines[1],
+          quantité: lines[2],
+          UnitPrice: lines[3],
           totalTTC: lines[4],
         };
 
