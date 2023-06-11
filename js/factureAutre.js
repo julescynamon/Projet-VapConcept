@@ -1,4 +1,4 @@
-const PDFParser = require("pdf2json");
+import PDFParser from "pdf2json";
 
 const pdfForm = document.getElementById("pdf-form");
 
@@ -13,33 +13,33 @@ pdfForm.addEventListener("submit", async (event) => {
     return;
   }
 
-  const convertPDFToJSON = (file) => {
-    return new Promise((resolve, reject) => {
-      const pdfParser = new PDFParser();
-
-      pdfParser.on("pdfParser_dataError", (errData) =>
-        reject(errData.parserError)
-      );
-      pdfParser.on("pdfParser_dataReady", (pdfData) => {
-        const textContent = pdfParser.getRawTextContent();
-        const lines = textContent.split("\n");
-
-        const jsonData = {
-          ref: lines[0],
-          designation: lines[1],
-          quantité: lines[2],
-          UnitPrice: lines[3],
-          totalTTC: lines[4],
-        };
-
-        resolve(jsonData);
-      });
-
-      pdfParser.loadPDF(file);
-    });
-  };
-
   const jsonData = await convertPDFToJSON(file);
 
   console.log(jsonData);
 });
+
+const convertPDFToJSON = (file) => {
+  return new Promise((resolve, reject) => {
+    const pdfParser = new PDFParser();
+
+    pdfParser.on("pdfParser_dataError", (errData) =>
+      reject(errData.parserError)
+    );
+    pdfParser.on("pdfParser_dataReady", (pdfData) => {
+      const textContent = pdfParser.getRawTextContent();
+      const lines = textContent.split("\n");
+
+      const jsonData = {
+        ref: lines[0],
+        designation: lines[1],
+        quantité: lines[2],
+        UnitPrice: lines[3],
+        totalTTC: lines[4],
+      };
+
+      resolve(jsonData);
+    });
+
+    pdfParser.loadPDF(file);
+  });
+};
