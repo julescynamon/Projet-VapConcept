@@ -1,5 +1,5 @@
 {
-  "name": "VapConcept",
+  "name": "vap-concept",
   "version": "1.0.0",
   "description": "App desktop pour l'arrivage automatique de VapConcept",
   "main": "main.js",
@@ -13,7 +13,9 @@
     "csvtojson": "^2.0.10",
     "electron": "^24.3.0",
     "electron-dl": "^3.5.0",
-    "pdf2json": "^3.0.4",
     "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "pdf2json": "^3.0.4"
   }
 }
