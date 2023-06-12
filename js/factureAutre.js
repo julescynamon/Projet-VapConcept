@@ -1,7 +1,57 @@
-import PDFParser from "pdf2json";
+const path = require("path");
+const fs = require("fs");
+const pdfjsLib = require("pdfjs-dist");
 
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+  "./node_modules/pdfjs-dist/build/pdf.worker.js";
+
+// Fonction pour convertir un fichier PDF en JSON
+async function convertPDFToJSON(pdfFile) {
+  const pdfData = await readFileAsArrayBuffer(pdfFile);
+
+  // Fonction pour lire le fichier PDF sous forme de ArrayBuffer
+  function readFileAsArrayBuffer(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        resolve(reader.result);
+      };
+
+      reader.onerror = reject;
+
+      reader.readAsArrayBuffer(file);
+    });
+  }
+
+  // Fonction pour extraire les données du PDF
+  async function extractDataFromPDF(pdfData) {
+    const pdf = await pdfjsLib.getDocument({ data: pdfData }).promise;
+    const totalPages = pdf.numPages;
+    const extractedData = [];
+
+    // Parcourir chaque page du PDF
+    for (let pageNumber = 1; pageNumber <= totalPages; pageNumber++) {
+      const page = await pdf.getPage(pageNumber);
+      const pageText = await page.getTextContent();
+      const pageItems = pageText.items;
+
+      console.log(pageItems);
+    }
+
+    return extractedData;
+  }
+
+  // Appel de la fonction pour extraire les données du PDF
+  const extractedData = await extractDataFromPDF(pdfData);
+
+  return extractedData;
+}
+
+// Récupération du formulaire
 const pdfForm = document.getElementById("pdf-form");
 
+// Écouteur d'événement pour la soumission du formulaire
 pdfForm.addEventListener("submit", async (event) => {
   event.preventDefault(); // Empêcher le comportement de soumission par défaut
 
@@ -14,32 +64,4 @@ pdfForm.addEventListener("submit", async (event) => {
   }
 
   const jsonData = await convertPDFToJSON(file);
-
-  console.log(jsonData);
 });
-
-const convertPDFToJSON = (file) => {
-  return new Promise((resolve, reject) => {
-    const pdfParser = new PDFParser();
-
-    pdfParser.on("pdfParser_dataError", (errData) =>
-      reject(errData.parserError)
-    );
-    pdfParser.on("pdfParser_dataReady", (pdfData) => {
-      const textContent = pdfParser.getRawTextContent();
-      const lines = textContent.split("\n");
-
-      const jsonData = {
-        ref: lines[0],
-        designation: lines[1],
-        quantité: lines[2],
-        UnitPrice: lines[3],
-        totalTTC: lines[4],
-      };
-
-      resolve(jsonData);
-    });
-
-    pdfParser.loadPDF(file);
-  });
-};
