@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@florpor/pdf-table-extractor": "^1.0.6",
     "csvtojson": "^2.0.10",
     "electron": "^24.3.0",
     "electron-dl": "^3.5.0",
