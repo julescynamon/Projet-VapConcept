@@ -33,7 +33,40 @@ async function convertPDFToJSON(pdfFile) {
       const tableData = pageItems.map((item) => item.str.split("\n"));
       // je supprimme les lignes contenant uniquement des espaces
       const tableData2 = tableData.filter((item) => item[0].trim() !== "");
-      console.log(tableData2);
+
+      // Si la page contient une ligne avec la str "Référence" alors je supprime toutes les lignes qui sont avant la str "Référence"
+      if (tableData2.some((item) => item[0].includes("Référence"))) {
+        const index = tableData2.findIndex((item) =>
+          item[0].includes("Référence")
+        );
+        tableData2.splice(0, index);
+      }
+
+      // Remove the specified lines from the table data
+      const filteredTableData = tableData2.filter((item) => {
+        const firstColumn = item[0];
+        return (
+          firstColumn !== "Référence" &&
+          firstColumn !== "Produit" &&
+          firstColumn !== "Prix cat. (HT)" &&
+          firstColumn !== "Qté" &&
+          firstColumn !== "Prix client (HT)" &&
+          firstColumn !== "Total à payer (HT)"
+        );
+      });
+
+      const products = [];
+      let currentProduct = [];
+
+      filteredTableData.forEach((item, index) => {
+        currentProduct.push(item);
+        if ((index + 1) % 8 === 0) {
+          products.push(currentProduct);
+          currentProduct = [];
+        }
+      });
+
+      console.log(products);
     }
     return extractedData;
   }
