@@ -23,52 +23,37 @@ async function convertPDFToJSON(pdfFile) {
   async function extractDataFromPDF(pdfData) {
     const pdf = await pdfjsLib.getDocument({ data: pdfData }).promise;
     const totalPages = pdf.numPages;
-    const extractedData = [];
+    const tableData = [];
     // Parcourir chaque page du PDF
     for (let pageNumber = 1; pageNumber <= totalPages; pageNumber++) {
       const page = await pdf.getPage(pageNumber);
       const pageText = await page.getTextContent();
       const pageItems = pageText.items;
       // Extraire les données du tableau
-      const tableData = pageItems.map((item) => item.str.split("\n"));
+      const tableDataPage = pageItems.map((item) => item.str.split("\n"));
       // je supprimme les lignes contenant uniquement des espaces
-      const tableData2 = tableData.filter((item) => item[0].trim() !== "");
-
+      const tableDataPageFiltered = tableDataPage.filter(
+        (item) => item[0].trim() !== ""
+      );
       // Si la page contient une ligne avec la str "Référence" alors je supprime toutes les lignes qui sont avant la str "Référence"
-      if (tableData2.some((item) => item[0].includes("Référence"))) {
-        const index = tableData2.findIndex((item) =>
+      if (tableDataPageFiltered.some((item) => item[0].includes("Référence"))) {
+        const index = tableDataPageFiltered.findIndex((item) =>
           item[0].includes("Référence")
         );
-        tableData2.splice(0, index);
+        tableDataPageFiltered.splice(0, index);
       }
-
-      // Remove the specified lines from the table data
-      const filteredTableData = tableData2.filter((item) => {
-        const firstColumn = item[0];
-        return (
-          firstColumn !== "Référence" &&
-          firstColumn !== "Produit" &&
-          firstColumn !== "Prix cat. (HT)" &&
-          firstColumn !== "Qté" &&
-          firstColumn !== "Prix client (HT)" &&
-          firstColumn !== "Total à payer (HT)"
-        );
-      });
-
-      const products = [];
-      let currentProduct = [];
-
-      filteredTableData.forEach((item, index) => {
-        currentProduct.push(item);
-        if ((index + 1) % 8 === 0) {
-          products.push(currentProduct);
-          currentProduct = [];
+      // Remove header and footer lines
+      const headerFooterRegex =
+        /^(JOSHNOACO|SIRET|N° TVA|\d+ \/ \d+|Facture #)/; // Change this regex pattern as needed
+      tableDataPageFiltered.forEach((item) => {
+        if (headerFooterRegex.test(item[0])) {
+          item.shift();
         }
       });
-
-      console.log(products);
+      tableData.push(...tableDataPageFiltered);
     }
-    return extractedData;
+    console.log(tableData);
+    return tableData;
   }
   // Appel de la fonction pour extraire les données du PDF
   const extractedData = await extractDataFromPDF(pdfData);
