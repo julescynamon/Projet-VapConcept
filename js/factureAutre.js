@@ -44,16 +44,28 @@ async function convertPDFToJSON(pdfFile) {
       }
       // Remove header and footer lines
       const headerFooterRegex =
-        /^(JOSHNOACO|SIRET|N° TVA|\d+ \/ \d+|Facture #)/; // Change this regex pattern as needed
+        /^(JOSHNOACO|SIRET|N° TVA|\d+ \/ \d+|Facture #)/;
+      const dateRegex = /^\d{2}\/\d{2}\/\d{4}$/;
       tableDataPageFiltered.forEach((item) => {
-        if (headerFooterRegex.test(item[0])) {
+        if (headerFooterRegex.test(item[0]) || dateRegex.test(item[0])) {
           item.shift();
         }
       });
       tableData.push(...tableDataPageFiltered);
     }
-    console.log(tableData);
-    return tableData;
+    // Je supprime les lignes contenant "Référence", "Produit", "Prix cat. (HT)", "Qté", "Prix client (HT)", "Total à payer (HT)"
+    const regex =
+      /^(Référence|Produit|Prix cat. \(HT\)|Qté|Prix client \(HT\)|Total à payer \(HT\))$/;
+    tableData.forEach((item) => {
+      if (regex.test(item[0])) {
+        item.shift();
+      }
+    });
+    // Supprimer les lignes vides
+    const tableDataRemove = tableData.filter((item) => item.length > 0);
+
+    console.log(tableDataRemove);
+    return tableDataRemove;
   }
   // Appel de la fonction pour extraire les données du PDF
   const extractedData = await extractDataFromPDF(pdfData);
