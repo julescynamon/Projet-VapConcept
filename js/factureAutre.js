@@ -1,91 +1,48 @@
-const path = require("path");
-const fs = require("fs");
-const pdfjsLib = require("pdfjs-dist");
+const XLSX = require("xlsx");
 
-pdfjsLib.GlobalWorkerOptions.workerSrc =
-  "./node_modules/pdfjs-dist/build/pdf.worker.js";
+// Get the link element by its ID
+const link = document.getElementById("external-link");
 
-// Fonction pour convertir un fichier PDF en JSON
-async function convertPDFToJSON(pdfFile) {
-  const pdfData = await readFileAsArrayBuffer(pdfFile);
-  // Fonction pour lire le fichier PDF sous forme de ArrayBuffer
-  function readFileAsArrayBuffer(file) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        resolve(reader.result);
-      };
-      reader.onerror = reject;
-      reader.readAsArrayBuffer(file);
-    });
-  }
-  // Fonction pour extraire les données du PDF
-  async function extractDataFromPDF(pdfData) {
-    const pdf = await pdfjsLib.getDocument({ data: pdfData }).promise;
-    const totalPages = pdf.numPages;
-    const tableData = [];
-    // Parcourir chaque page du PDF
-    for (let pageNumber = 1; pageNumber <= totalPages; pageNumber++) {
-      const page = await pdf.getPage(pageNumber);
-      const pageText = await page.getTextContent();
-      const pageItems = pageText.items;
-      // Extraire les données du tableau
-      const tableDataPage = pageItems.map((item) => item.str.split("\n"));
-      // je supprimme les lignes contenant uniquement des espaces
-      const tableDataPageFiltered = tableDataPage.filter(
-        (item) => item[0].trim() !== ""
-      );
-      // Si la page contient une ligne avec la str "Référence" alors je supprime toutes les lignes qui sont avant la str "Référence"
-      if (tableDataPageFiltered.some((item) => item[0].includes("Référence"))) {
-        const index = tableDataPageFiltered.findIndex((item) =>
-          item[0].includes("Référence")
-        );
-        tableDataPageFiltered.splice(0, index);
-      }
-      // Remove header and footer lines
-      const headerFooterRegex =
-        /^(JOSHNOACO|SIRET|N° TVA|\d+ \/ \d+|Facture #)/;
-      const dateRegex = /^\d{2}\/\d{2}\/\d{4}$/;
-      tableDataPageFiltered.forEach((item) => {
-        if (headerFooterRegex.test(item[0]) || dateRegex.test(item[0])) {
-          item.shift();
-        }
-      });
-      tableData.push(...tableDataPageFiltered);
-    }
-    // Je supprime les lignes contenant "Référence", "Produit", "Prix cat. (HT)", "Qté", "Prix client (HT)", "Total à payer (HT)"
-    const regex =
-      /^(Référence|Produit|Prix cat. \(HT\)|Qté|Prix client \(HT\)|Total à payer \(HT\))$/;
-    tableData.forEach((item) => {
-      if (regex.test(item[0])) {
-        item.shift();
-      }
-    });
-    // Supprimer les lignes vides
-    const tableDataRemove = tableData.filter((item) => item.length > 0);
+// Add an event listener to the link element
+link.addEventListener("click", (event) => {
+  // Prevent the default behavior of the link element
+  event.preventDefault();
 
-    console.log(tableDataRemove);
-    return tableDataRemove;
-  }
-  // Appel de la fonction pour extraire les données du PDF
-  const extractedData = await extractDataFromPDF(pdfData);
-  return extractedData;
-}
+  // Open the link in the user's default browser
+  require("electron").shell.openExternal(link.href);
+});
 
 // Récupération du formulaire
-const pdfForm = document.getElementById("pdf-form");
+const pdfForm = document.getElementById("excel-form");
 
 // Écouteur d'événement pour la soumission du formulaire
 pdfForm.addEventListener("submit", async (event) => {
   event.preventDefault(); // Empêcher le comportement de soumission par défaut
 
-  const fileInput = document.getElementById("pdf-file");
+  const fileInput = document.getElementById("excel-file");
   const file = fileInput.files[0];
 
   if (!file) {
-    alert("Veuillez sélectionner un fichier PDF.");
+    alert("Veuillez sélectionner un fichier excel.");
     return;
   }
 
-  const jsonData = await convertPDFToJSON(file);
+  const jsonData = await convertExcelToJSON(file);
 });
+
+// Function to convert Excel file to JSON
+async function convertExcelToJSON(excelFile) {
+  const workbook = XLSX.readFile(excelFile.path);
+  const sheetNames = workbook.SheetNames;
+  const jsonData = {};
+
+  for (let i = 0; i < sheetNames.length; i++) {
+    const worksheet = workbook.Sheets[sheetNames[i]];
+    jsonData[sheetNames[i]] = XLSX.utils.sheet_to_json(worksheet, {
+      header: 1,
+    });
+  }
+
+  console.log(jsonData);
+  return jsonData;
+}

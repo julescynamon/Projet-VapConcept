@@ -151,12 +151,28 @@
               Facture autre fournisseurs
             </h1>
 
+            <div>
+              <p>
+                Vous devez importer la facture de votre fournisseur en excel
+                pour convertir le pdf aller sur ce site :
+                <a
+                  id="external-link"
+                  class="linkInfo"
+                  href="https://www.ilovepdf.com/fr/pdf_en_excel"
+                  >https://www.ilovepdf.com/fr/pdf_en_excel</a
+                >
+                suivez leurs indications ça téléchargera un fichier excel sur
+                votre ordinateur. Une fois fais veuillez importer le nouveau
+                fichier excel ci-dessous.
+              </p>
+            </div>
+
             <div class="row mt-5">
               <h3 class="text-black">Importez la Facture ⤵️</h3>
             </div>
             <div class="row mt-5 mb-5">
               <form
-                id="pdf-form"
+                id="excel-form"
                 action=""
                 method="post"
                 enctype="multipart/form-data"
@@ -164,8 +180,8 @@
                 <input
                   type="file"
                   name="file"
-                  accept="application/pdf"
-                  id="pdf-file"
+                  accept=".xls,.xlsx"
+                  id="excel-file"
                 />
                 <input
                   type="submit"
