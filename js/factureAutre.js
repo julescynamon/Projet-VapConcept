@@ -1,3 +1,5 @@
+const path = require("path");
+const fs = require("fs");
 const XLSX = require("xlsx");
 
 // Get the link element by its ID
@@ -10,24 +12,6 @@ link.addEventListener("click", (event) => {
 
   // Open the link in the user's default browser
   require("electron").shell.openExternal(link.href);
-});
-
-// Récupération du formulaire
-const pdfForm = document.getElementById("excel-form");
-
-// Écouteur d'événement pour la soumission du formulaire
-pdfForm.addEventListener("submit", async (event) => {
-  event.preventDefault(); // Empêcher le comportement de soumission par défaut
-
-  const fileInput = document.getElementById("excel-file");
-  const file = fileInput.files[0];
-
-  if (!file) {
-    alert("Veuillez sélectionner un fichier excel.");
-    return;
-  }
-
-  const jsonData = await convertExcelToJSON(file);
 });
 
 // Function to convert Excel file to JSON
@@ -90,14 +74,16 @@ async function convertExcelToJSON(excelFile) {
 
   for (let i = 0; i < filteredTable.length; i++) {
     const currentLine = filteredTable[i];
-    if (currentLine.field1 && currentLine.field1.includes("JOSHNOACO")) {
+    if (
+      currentLine.field1 &&
+      typeof currentLine.field1 === "string" &&
+      currentLine.field1.includes("JOSHNOACO")
+    ) {
       // je reprends mon tableau et dans chaque objet je supprime la keys field3
       for (let j = 0; j < filteredTable.length; j++) {
         delete filteredTable[j].field3;
       }
     }
-
-    continue;
   }
 
   filteredTable = removeObjectsWithFewKeys(filteredTable);
@@ -112,7 +98,7 @@ async function convertExcelToJSON(excelFile) {
     }
   }
 
-  // Loop to reassign keys in each object
+  // bouclz pour reassigner les keys
   for (let i = 0; i < filteredTable.length; i++) {
     const currentLine = filteredTable[i];
     const object = {};
@@ -129,8 +115,39 @@ async function convertExcelToJSON(excelFile) {
 
   filteredTable = removeObjectsWithoutNumber(filteredTable);
 
-  console.log(filteredTable);
-  return jsonData;
+  // je boucle sur mon tableau d'objet pour réassigner la keys field4 en unitPrice
+  for (let i = 0; i < filteredTable.length; i++) {
+    const currentLine = filteredTable[i];
+    const object = {};
+
+    for (const key in currentLine) {
+      if (key === "field4") {
+        object["unitPrice"] = currentLine[key];
+      } else {
+        object[key] = currentLine[key];
+      }
+    }
+
+    filteredTable[i] = object;
+  }
+
+  // je boucle sur mon tableau d'objet pour réassigner la keys field5 en field4
+  for (let i = 0; i < filteredTable.length; i++) {
+    const currentLine = filteredTable[i];
+    const object = {};
+
+    for (const key in currentLine) {
+      if (key === "field5") {
+        object["field4"] = currentLine[key];
+      } else {
+        object[key] = currentLine[key];
+      }
+    }
+
+    filteredTable[i] = object;
+  }
+
+  return filteredTable;
 }
 
 // Fonction pour supprimer les objets qui ont moins de 4 keys
@@ -145,3 +162,65 @@ function removeObjectsWithoutNumber(array) {
     return (!isNaN(value) && Number.isInteger(value)) || Number.isFinite(value);
   });
 }
+
+// Récupération du formulaire
+const pdfForm = document.getElementById("excel-form");
+
+// Écouteur d'événement pour la soumission du formulaire
+pdfForm.addEventListener("submit", async (event) => {
+  event.preventDefault(); // Empêcher le comportement de soumission par défaut
+
+  const fileInput = document.getElementById("excel-file");
+  const file = fileInput.files[0];
+
+  if (!file) {
+    alert("Veuillez sélectionner un fichier excel.");
+    return;
+  }
+
+  const jsonData = await convertExcelToJSON(file);
+
+  // on crèe un fichier json avec les données de la facture
+  const factureModifPath = path.join(__dirname, "/documents/facture.json");
+  if (fs.existsSync(factureModifPath)) {
+    fs.unlinkSync(factureModifPath);
+  }
+
+  fs.writeFileSync(factureModifPath, JSON.stringify(jsonData));
+
+  const tbody = document.getElementById("factureAutre-table");
+  tbody.innerHTML = "";
+  // Créez les lignes du tableau avec les données de la facture
+  for (let i = 0; i < jsonData.length; i++) {
+    const tr = document.createElement("tr");
+    const td1 = document.createElement("td");
+    const td2 = document.createElement("td");
+    const td3 = document.createElement("td");
+    const td4 = document.createElement("td");
+    const td5 = document.createElement("td");
+
+    td1.textContent = jsonData[i].field1;
+    td2.textContent = jsonData[i].field2;
+    td3.textContent = jsonData[i].field3;
+    td4.textContent = jsonData[i].field4;
+    td5.textContent = jsonData[i].unitPrice;
+
+    tr.appendChild(td1);
+    tr.appendChild(td2);
+    tr.appendChild(td3);
+    tr.appendChild(td4);
+    tr.appendChild(td5);
+
+    tbody.appendChild(tr);
+  }
+
+  // on récupère le prix total de la facture
+  const totalFact = document.getElementById("totalFact");
+  totalFact.innerHTML = "";
+  let total = 0;
+  for (let i = 0; i < jsonData.length; i++) {
+    total += parseFloat(jsonData[i].field4);
+  }
+  total = total.toFixed(2);
+  totalFact.textContent = "€ " + total;
+});
