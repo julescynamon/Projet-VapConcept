@@ -1,11 +1,17 @@
 const path = require("path");
 const fs = require("fs");
 
-// Get the path to the facture.json file using path.join()
-const factureModifPath = path.join(__dirname, "documents", "facture.json");
+const facturePath = path.join(__dirname, "documents", "facture.json");
+const factureCopyPath = path.join(__dirname, "documents", "facture_copy.json");
+
+// Lire le contenu du fichier facture.json
+const factureContent = fs.readFileSync(facturePath, "utf8");
+
+// Écrire le contenu dans un nouveau fichier facture_copy.json
+fs.writeFileSync(factureCopyPath, factureContent);
 
 // Read the facture.json file and parse it as a JavaScript object
-const fact = JSON.parse(fs.readFileSync(factureModifPath, "utf8"));
+const fact = JSON.parse(fs.readFileSync(factureCopyPath, "utf8"));
 
 // Define the replacements object
 const replacements = {
@@ -77,10 +83,10 @@ for (let i = 0; i < fact.length; i++) {
 }
 
 // Write the modified facture.json file back to disk
-if (fs.existsSync(factureModifPath)) {
-  fs.unlinkSync(factureModifPath);
+if (fs.existsSync(factureCopyPath)) {
+  fs.unlinkSync(factureCopyPath);
 }
-fs.writeFileSync(factureModifPath, JSON.stringify(fact));
+fs.writeFileSync(factureCopyPath, JSON.stringify(fact));
 
 // Get the tbody element and clear its contents
 const tbody = document.getElementById("arrivage-table");
@@ -239,3 +245,38 @@ for (let i = 0; i < refNonTrouvees2.length; i++) {
 
   tbody2.appendChild(tr2);
 }
+
+// Si on quitte la page arrivage on supprime les fichiers facture.json et facture2.json et arrivage.xlsx
+window.addEventListener("beforeunload", () => {
+  const fs = require("fs");
+  const path = require("path");
+
+  const factureCopytoModifiedPath = path.join(
+    __dirname,
+    "documents",
+    "facture_copy.json"
+  );
+  const facture2Path = path.join(__dirname, "documents", "facture2.json");
+  const arrivagePath = path.join(__dirname, "Arrivage.xlsx");
+  const refNonTrouveesPath = path.join(
+    __dirname,
+    "documents",
+    "refNonTrouvees.json"
+  );
+
+  if (fs.existsSync(refNonTrouveesPath)) {
+    fs.unlinkSync(refNonTrouveesPath);
+  }
+
+  if (fs.existsSync(facture2Path)) {
+    fs.unlinkSync(facture2Path);
+  }
+
+  if (fs.existsSync(arrivagePath)) {
+    fs.unlinkSync(arrivagePath);
+  }
+
+  if (fs.existsSync(factureCopytoModifiedPath)) {
+    fs.unlinkSync(factureCopytoModifiedPath);
+  }
+});
