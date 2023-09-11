@@ -237,13 +237,8 @@ for (let i = 0; i < refNonTrouvees2.length; i++) {
   checkbox.addEventListener("change", () => {
     // Ajouter un gestionnaire d'événement pour détecter les changements de la case à cocher
     if (checkbox.checked) {
-      // Si la case à cocher est cochée
-      // Faites quelque chose ici, par exemple, marquez la ligne comme étant traitée
-
       tr2.classList.add("checked"); // Ajoutez une classe CSS pour marquer la ligne
     } else {
-      // Si la case à cocher est décochée
-      // Faites quelque chose ici, par exemple, marquez la ligne comme non traitée
       tr2.classList.remove("checked"); // Supprimez la classe CSS pour marquer la ligne
     }
   });
