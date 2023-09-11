@@ -225,12 +225,30 @@ tbody2.innerHTML = "";
 // Create a table row for each item in fact and append it to the tbody element
 for (let i = 0; i < refNonTrouvees2.length; i++) {
   const tr2 = document.createElement("tr");
+  const tdCheckbox = document.createElement("td"); // Ajout de la cellule pour la case à cocher
   const tdRef = document.createElement("td");
   const tdDesign = document.createElement("td");
   const tdUnit = document.createElement("td");
   const tdQuantity = document.createElement("td");
   const tdTotal = document.createElement("td");
 
+  const checkbox = document.createElement("input"); // Création de la case à cocher
+  checkbox.type = "checkbox"; // Définition du type de la case à cocher
+  checkbox.addEventListener("change", () => {
+    // Ajouter un gestionnaire d'événement pour détecter les changements de la case à cocher
+    if (checkbox.checked) {
+      // Si la case à cocher est cochée
+      // Faites quelque chose ici, par exemple, marquez la ligne comme étant traitée
+
+      tr2.classList.add("checked"); // Ajoutez une classe CSS pour marquer la ligne
+    } else {
+      // Si la case à cocher est décochée
+      // Faites quelque chose ici, par exemple, marquez la ligne comme non traitée
+      tr2.classList.remove("checked"); // Supprimez la classe CSS pour marquer la ligne
+    }
+  });
+
+  tdCheckbox.appendChild(checkbox); // Ajout de la case à cocher à la cellule correspondante
   tdRef.textContent = refNonTrouvees2[i].ref;
   tdDesign.textContent = refNonTrouvees2[i].designation;
   tdUnit.textContent = refNonTrouvees2[i].prixUnitaire;
@@ -242,6 +260,7 @@ for (let i = 0; i < refNonTrouvees2.length; i++) {
   tr2.appendChild(tdUnit);
   tr2.appendChild(tdQuantity);
   tr2.appendChild(tdTotal);
+  tr2.appendChild(tdCheckbox); // Ajout de la cellule de la case à cocher à la ligne
 
   tbody2.appendChild(tr2);
 }

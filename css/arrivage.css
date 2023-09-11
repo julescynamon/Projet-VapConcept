@@ -5,3 +5,7 @@
   border-radius: 5px;
   padding: 10px;
 }
+
+.checked {
+  background-color: rgb(29, 218, 29) !important;
+}

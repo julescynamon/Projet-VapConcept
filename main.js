@@ -26,7 +26,7 @@ function createWindow() {
 
   // Chargement de l'index.html
   win.loadFile(path.join(__dirname, "index.html"));
-  win.webContents.openDevTools();
+  // win.webContents.openDevTools();
 
   // gestion des demandes ipc
   ipc.on("reduceApp", () => {
