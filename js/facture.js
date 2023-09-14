@@ -90,7 +90,7 @@ function displayFactureData(csvContent) {
     fs.unlinkSync(factureModifPath);
   }
   fs.writeFileSync(factureModifPath, JSON.stringify(jsonData));
-
+  console.log(jsonData);
   const tbody = document.getElementById("facture-table");
   tbody.innerHTML = "";
   // Créez les lignes du tableau avec les données de la facture

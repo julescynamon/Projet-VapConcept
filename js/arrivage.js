@@ -139,12 +139,21 @@ for (let i = 0; i < fact.length; i++) {
 }
 fs.writeFileSync(factureModifPath2, JSON.stringify(fact2));
 
-// Create an XLSX file from the data in facture2.json
-const XLSX = require("xlsx");
-const workbook = XLSX.utils.book_new();
-const sheet = XLSX.utils.json_to_sheet(fact2);
-XLSX.utils.book_append_sheet(workbook, sheet, "Arrivage");
-XLSX.writeFile(workbook, path.join(__dirname, "Arrivage.xlsx"));
+// Create a new CSV file with the modified data from fact2.json
+const createCsvWriter = require("csv-writer").createObjectCsvWriter;
+const csvWriter = createCsvWriter({
+  path: path.join(__dirname, "Arrivage.csv"),
+  header: [
+    { id: "field1", title: "Field 1" },
+    { id: "field3", title: "Field 3" },
+    { id: "unitPrice", title: "Unit Price" },
+  ],
+});
+
+csvWriter
+  .writeRecords(fact2)
+  .then(() => console.log("CSV file created successfully"))
+  .catch((error) => console.error("Error creating CSV file:", error));
 
 // Enable the download button for the XLSX file
 const downloadButton = document.getElementById("btnArrivage");
@@ -153,7 +162,7 @@ downloadButton.disabled = false;
 // Create a download link for the XLSX file and set the download attribute to the user's desktop path
 downloadButton.addEventListener("click", () => {
   const file = new Blob(
-    [fs.readFileSync(path.join(__dirname, "Arrivage.xlsx"))],
+    [fs.readFileSync(path.join(__dirname, "Arrivage.csv"))],
     {
       type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     }
@@ -161,7 +170,7 @@ downloadButton.addEventListener("click", () => {
   const url = URL.createObjectURL(file);
   const a = document.createElement("a");
   a.href = url;
-  a.download = path.join(require("os").homedir(), "Desktop", "Arrivage.xlsx");
+  a.download = path.join(require("os").homedir(), "Desktop", "Arrivage.csv");
   document.body.appendChild(a);
   a.click();
   setTimeout(() => {
@@ -169,6 +178,8 @@ downloadButton.addEventListener("click", () => {
     window.URL.revokeObjectURL(url);
   }, 0);
 });
+
+// TODO: ajouter une boucle pour remplacer les ref fournisseurs donc le field1 par les ref fournisseurs du fichier bdd.json en comparant la désignations des produits
 
 // une fois l'arrivage effectué on compare les references fournisseurs avec ceux dans le fichier bdd.xlsx et on affiche les references qui ne sont pas dans le fichier bdd.xlsx
 const bddPath = path.join(__dirname, "documents", "bdd.json");
