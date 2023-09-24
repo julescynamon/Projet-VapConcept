@@ -1,8 +1,32 @@
 const path = require("path");
 const fs = require("fs");
 
-const facturePath = path.join(__dirname, "documents", "facture.json");
-const factureCopyPath = path.join(__dirname, "documents", "facture_copy.json");
+function getAppDataPath() {
+  switch (process.platform) {
+    case "darwin": {
+      return path.join(
+        process.env.HOME,
+        "Library",
+        "Application Support",
+        "vap-concept"
+      );
+    }
+    case "win32": {
+      return path.join(process.env.APPDATA, "vap-concept");
+    }
+    case "linux": {
+      return path.join(process.env.HOME, ".vap-concept");
+    }
+    default: {
+      console.log("Unsupported platform!");
+      process.exit(1);
+    }
+  }
+}
+
+const appDatatDirPath = getAppDataPath();
+const facturePath = path.join(appDatatDirPath, "facture.json");
+const factureCopyPath = path.join(appDatatDirPath, "facture_copy.json");
 
 // Lire le contenu du fichier facture.json
 const factureContent = fs.readFileSync(facturePath, "utf8");
@@ -13,65 +37,21 @@ fs.writeFileSync(factureCopyPath, factureContent);
 // Read the facture.json file and parse it as a JavaScript object
 const fact = JSON.parse(fs.readFileSync(factureCopyPath, "utf8"));
 
-// Define the replacements object
-const replacements = {
-  "par 20": 20,
-  "20pcs": 20,
-  "20 pièces": 20,
-  "20 pieces": 20,
-  "par 10": 10,
-  "10 pièces": 10,
-  "10 pieces": 10,
-  "10pcs": 10,
-  "pack de 10": 10,
-  "par 2": 2,
-  "2pcs": 2,
-  "pack de 2": 2,
-  "2 pièces": 2,
-  "2 pieces": 2,
-  "par 9": 9,
-  "9pcs": 9,
-  "pack de 9": 9,
-  "9 pièces": 9,
-  "9 pieces": 9,
-  "par 12": 12,
-  "12pcs": 12,
-  "pack de 12": 12,
-  "12 pièces": 12,
-  "12 pieces": 12,
-  "par 6": 6,
-  "pack de 6": 6,
-  "6pcs": 6,
-  "6 pièces": 6,
-  "6 pieces": 6,
-  "par 5": 5,
-  "pack de 5": 5,
-  "5pcs": 5,
-  "5 pièces": 5,
-  "5 pieces": 5,
-  "par 4": 4,
-  "pack de 4": 4,
-  "4pcs": 4,
-  "4 pièces": 4,
-  "4 pieces": 4,
-  "par 3": 3,
-  "pack de 3": 3,
-  "3pcs": 3,
-  "3 pièces": 3,
-  "3 pieces": 3,
-  "par 2": 2,
-  "pack de 2": 2,
-  "2pcs": 2,
-  "2 pièces": 2,
-  "2 pieces": 2,
-};
+const bddPath = path.join(appDatatDirPath, "bdd.json");
+const bddContent = fs.readFileSync(bddPath, "utf8");
+const bdd = JSON.parse(bddContent);
 
-// Replace the strings in fact[i].field2 with their corresponding multipliers
 for (let i = 0; i < fact.length; i++) {
   const item = fact[i];
-  for (const [string, multiplier] of Object.entries(replacements)) {
-    if (item.field2.toLowerCase().includes(string.toLowerCase())) {
+  const refFournisseur = item.field1;
+
+  for (let j = 0; j < bdd.length; j++) {
+    const bddItem = bdd[j];
+    if (bddItem.ref[" Fourn"] === refFournisseur) {
+      const multiplier = bddItem.Tag;
+      console.log(multiplier);
       item.field3 = parseInt(item.field3) * multiplier;
+      break;
     }
   }
 }
@@ -127,7 +107,7 @@ total = total.toFixed(2);
 totalArrivage.textContent = "€ " + total;
 
 // Create a new facture2.json file with the modified data from facture.json
-const factureModifPath2 = path.join(__dirname, "documents", "facture2.json");
+const factureModifPath2 = path.join(appDatatDirPath, "facture2.json");
 const fact2 = [];
 for (let i = 0; i < fact.length; i++) {
   const item = fact[i];
@@ -182,8 +162,8 @@ downloadButton.addEventListener("click", () => {
 // TODO: ajouter une boucle pour remplacer les ref fournisseurs donc le field1 par les ref fournisseurs du fichier bdd.json en comparant la désignations des produits
 
 // une fois l'arrivage effectué on compare les references fournisseurs avec ceux dans le fichier bdd.xlsx et on affiche les references qui ne sont pas dans le fichier bdd.xlsx
-const bddPath = path.join(__dirname, "documents", "bdd.json");
-const bdd = JSON.parse(fs.readFileSync(bddPath, "utf8"));
+const bddPath2 = path.join(appDatatDirPath, "bdd.json");
+const bdd2 = JSON.parse(fs.readFileSync(bddPath2, "utf8"));
 
 const refFournisseur = [];
 for (let i = 0; i < fact.length; i++) {
@@ -191,7 +171,7 @@ for (let i = 0; i < fact.length; i++) {
 }
 
 const refBdd = [];
-for (let i = 0; i < bdd.length; i++) {
+for (let i = 0; i < bdd2.length; i++) {
   refBdd.push(bdd[i].ref[" Fourn"]);
 }
 
@@ -203,11 +183,60 @@ for (let i = 0; i < refFournisseur.length; i++) {
   }
 }
 
-const refNonTrouveesPath = path.join(
-  __dirname,
-  "documents",
-  "refNonTrouvees.json"
-);
+const refNonTrouveesPath = path.join(appDatatDirPath, "refNonTrouvees.json");
+
+// Define the replacements object
+const replacements = {
+  "par 20": 20,
+  "20pcs": 20,
+  "20 pièces": 20,
+  "20 pieces": 20,
+  "par 10": 10,
+  "10 pièces": 10,
+  "10 pieces": 10,
+  "10pcs": 10,
+  "pack de 10": 10,
+  "par 2": 2,
+  "2pcs": 2,
+  "pack de 2": 2,
+  "2 pièces": 2,
+  "2 pieces": 2,
+  "par 9": 9,
+  "9pcs": 9,
+  "pack de 9": 9,
+  "9 pièces": 9,
+  "9 pieces": 9,
+  "par 12": 12,
+  "12pcs": 12,
+  "pack de 12": 12,
+  "12 pièces": 12,
+  "12 pieces": 12,
+  "par 6": 6,
+  "pack de 6": 6,
+  "6pcs": 6,
+  "6 pièces": 6,
+  "6 pieces": 6,
+  "par 5": 5,
+  "pack de 5": 5,
+  "5pcs": 5,
+  "5 pièces": 5,
+  "5 pieces": 5,
+  "par 4": 4,
+  "pack de 4": 4,
+  "4pcs": 4,
+  "4 pièces": 4,
+  "4 pieces": 4,
+  "par 3": 3,
+  "pack de 3": 3,
+  "3pcs": 3,
+  "3 pièces": 3,
+  "3 pieces": 3,
+  "par 2": 2,
+  "pack de 2": 2,
+  "2pcs": 2,
+  "2 pièces": 2,
+  "2 pieces": 2,
+};
 
 const refNonTrouvees2 = [];
 for (let i = 0; i < fact.length; i++) {
@@ -216,6 +245,11 @@ for (let i = 0; i < fact.length; i++) {
     continue;
   }
   if (!refBdd.includes(item.field1)) {
+    for (const [string, multiplier] of Object.entries(replacements)) {
+      if (item.field2.toLowerCase().includes(string.toLowerCase())) {
+        item.field3 = parseInt(item.field3) * multiplier;
+      }
+    }
     const newItem = {
       ref: item.field1,
       designation: item.field2,
@@ -276,18 +310,15 @@ window.addEventListener("beforeunload", () => {
   const fs = require("fs");
   const path = require("path");
 
+  const appDatatDirPath = getAppDataPath();
+
   const factureCopytoModifiedPath = path.join(
-    __dirname,
-    "documents",
+    appDatatDirPath,
     "facture_copy.json"
   );
-  const facture2Path = path.join(__dirname, "documents", "facture2.json");
-  const arrivagePath = path.join(__dirname, "Arrivage.xlsx");
-  const refNonTrouveesPath = path.join(
-    __dirname,
-    "documents",
-    "refNonTrouvees.json"
-  );
+  const facture2Path = path.join(appDatatDirPath, "facture2.json");
+  const arrivagePath = path.join(appDatatDirPath, "Arrivage.xlsx");
+  const refNonTrouveesPath = path.join(appDatatDirPath, "refNonTrouvees.json");
 
   if (fs.existsSync(refNonTrouveesPath)) {
     fs.unlinkSync(refNonTrouveesPath);

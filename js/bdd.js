@@ -1,6 +1,29 @@
 const path = require("path");
 const fs = require("fs");
 
+function getAppDataPath() {
+  switch (process.platform) {
+    case "darwin": {
+      return path.join(
+        process.env.HOME,
+        "Library",
+        "Application Support",
+        "vap-concept"
+      );
+    }
+    case "win32": {
+      return path.join(process.env.APPDATA, "vap-concept");
+    }
+    case "linux": {
+      return path.join(process.env.HOME, ".vap-concept");
+    }
+    default: {
+      console.log("Unsupported platform!");
+      process.exit(1);
+    }
+  }
+}
+
 // Get the link element by its ID
 const link = document.getElementById("external-link");
 
@@ -43,8 +66,9 @@ function handleFormSubmit(event) {
       csv()
         .fromString(csvContent)
         .then((jsonContent) => {
+          const appDatatDirPath = getAppDataPath();
           // Supprimez l'ancien fichier bdd.json s'il existe
-          const bddPath = path.join(__dirname, "/documents/bdd.json");
+          const bddPath = path.join(appDatatDirPath, "bdd.json");
           if (fs.existsSync(bddPath)) {
             fs.unlinkSync(bddPath);
           }

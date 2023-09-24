@@ -1,6 +1,29 @@
 const path = require("path");
 const fs = require("fs");
 
+function getAppDataPath() {
+  switch (process.platform) {
+    case "darwin": {
+      return path.join(
+        process.env.HOME,
+        "Library",
+        "Application Support",
+        "vap-concept"
+      );
+    }
+    case "win32": {
+      return path.join(process.env.APPDATA, "vap-concept");
+    }
+    case "linux": {
+      return path.join(process.env.HOME, ".vap-concept");
+    }
+    default: {
+      console.log("Unsupported platform!");
+      process.exit(1);
+    }
+  }
+}
+
 // Sélectionnez le formulaire et ajoutez un écouteur d'événements 'submit'
 const form = document.getElementById("csv-form");
 form.addEventListener("submit", handleFormSubmit);
@@ -25,8 +48,9 @@ function handleFormSubmit(event) {
     const csvContent = e.target.result;
 
     try {
+      const appDatatDirPath = getAppDataPath();
       // Supprimez l'ancien fichier facture.csv s'il existe
-      const facturePath = path.join(__dirname, "/documents/facture.csv");
+      const facturePath = path.join(appDatatDirPath, "facture.csv");
       if (fs.existsSync(facturePath)) {
         fs.unlinkSync(facturePath);
       }
@@ -84,8 +108,9 @@ function displayFactureData(csvContent) {
     jsonData.push(object);
   }
 
+  const appDatatDirPath = getAppDataPath();
   // on crèe un fichier json avec les données de la facture
-  const factureModifPath = path.join(__dirname, "/documents/facture.json");
+  const factureModifPath = path.join(appDatatDirPath, "facture.json");
   if (fs.existsSync(factureModifPath)) {
     fs.unlinkSync(factureModifPath);
   }

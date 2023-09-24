@@ -24,6 +24,7 @@
     <!-- Custom styles for this template-->
     <link href="css/sb-admin-2.css" rel="stylesheet" />
     <link href="css/custom.css" rel="stylesheet" />
+    <link href="css/arrivage.css" rel="stylesheet" />
   </head>
 
   <body id="page-top">
@@ -52,7 +53,7 @@
         <li class="nav-item">
           <a class="nav-link" href="index.html">
             <i class="fa fa-home"></i>
-            <span>Accueil</span></a
+            <span>Acceuil</span></a
           >
         </li>
 
@@ -79,20 +80,20 @@
         </li>
 
         <!-- Nav Item - Facture Autre Fournisseurs -->
-        <!-- <li class="nav-item">
+        <li class="nav-item">
           <a class="nav-link" href="factureAutre.html">
             <i class="fa fa-book"></i>
             <span>Facture JoshNoa</span></a
           >
-        </li> -->
+        </li>
 
         <!-- Nav Item - Facture Autre Fournisseurs -->
-        <!-- <li class="nav-item">
+        <li class="nav-item">
           <a class="nav-link" href="factureLCALVP.html">
             <i class="fa fa-book"></i>
             <span>Facture LVP et LCA</span></a
           >
-        </li> -->
+        </li>
 
         <!-- Nav Item - Arrivage automatique -->
         <li class="nav-item">
@@ -103,12 +104,12 @@
         </li>
 
         <!-- Nav Item - Arrivage Autre Fournisseurs -->
-        <!-- <li class="nav-item">
+        <li class="nav-item">
           <a class="nav-link" href="arrivageAutreFourn.html">
             <i class="fa fa-book"></i>
             <span>Arrivage autre fournisseurs</span></a
           >
-        </li> -->
+        </li>
 
         <!-- Divider -->
         <hr class="sidebar-divider d-none d-md-block" />
@@ -162,95 +163,55 @@
           <!-- Begin Page Content -->
           <div class="container-fluid text-center">
             <!-- Page Heading -->
-            <h1 class="h3 mb-5 text-black">Accueil - Présentations</h1>
+            <h1 class="h3 mb-5 text-black">
+              Arrivage JOSH, LVP, LCA, automatique Hiboutik
+            </h1>
 
+            <div id="refNotFindAutreFourn">
+              <h3>Produits à rentrer manuellement où à créer</h3>
+              <table class="table table-striped" id="tableRegistre">
+                <hr />
+                <thead>
+                  <tr>
+                    <th><i class="fa fa-folder pr-2"></i> Référence</th>
+                    <th><i class="fa fa-newspaper pr-2"></i> Désignation</th>
+                    <th><i class="fa fa-euro-sign pr-2"></i> Prix Unitaire</th>
+                    <th><i class="fa fa-list pr-2"></i> Quantité</th>
+                    <th><i class="fa fa-euro-sign pr-2"></i> Prix Total</th>
+                  </tr>
+                </thead>
+                <tbody id="refNotFindAutreFourn-table"></tbody>
+              </table>
+            </div>
+            <hr />
             <!-- Content Row -->
-
-            <div class="row info">
-              Bienvenue, sur votre logiciel pour effectuer vos arrivages de
-              façon automatique.
+            <h3 class="mb-5 mt-5">Arrivage à exportez sur votre Hiboutik ⤵️</h3>
+            <div class="justify-content-between row p-4">
+              <button
+                type="button"
+                class="btn btn-success btn-lg"
+                id="btnArrivageAutreFourn"
+                disabled
+              >
+                <i class="fa fa-file-invoice-dollar pr-2"></i> Exportez Arrivage
+              </button>
+              <div class="totalArrivage m-4" id="totalArrivageAutreFourn">
+                <i class="fa fa-euro-sign pr-2"></i>
+              </div>
             </div>
-            <div class="row info">
-              Veuillez suivre la procédure détaillez ci-dessous :
-            </div>
-            <div class="row mb-5">
-              <ul>
-                <li class="info">
-                  Au préalable veuillez vous assurer que vous avez bien
-                  télécharger votre facture sur le site du fournisseur.
-                </li>
-                <li class="info">
-                  Tout d'abords, veuillez vous rendre sur la page
-                  <a href="bdd.html" class="linkInfo"
-                    >Base de données Hiboutik</a
-                  >, pour télécharger la base de données Hiboutik sur le
-                  logiciel. Une fois télécharger, Vous devriez avoir un message
-                  à l'écran vous signifiant que votre base de données à bien été
-                  importez. Si c'est le cas veuillez suivre la suite de la
-                  procédure.
-                </li>
-                <li class="info">
-                  Si c'est une facture du fournisseur JPR en CSV, Veuillez vous
-                  rendre sur la page
-                  <a href="facture.html" class="linkInfo">Facture JPR</a> pour
-                  télécharger votre facture sur le logiciel. Une fois
-                  télécharger, elle devrait s'afficher à l'écran avec le total
-                  veuillez vérifiez qu'il n'y a pas eu d'erreur.
-                </li>
-                <!-- <li class="info">
-                  Si c'est une facture du fournisseur JoshNoa en PDF, Veuillez
-                  vous rendre sur la page
-                  <a href="factureAutre.html" class="linkInfo"
-                    >Facture JoshNoa</a
-                  >
-                  pour télécharger votre facture sur le logiciel. Une fois
-                  télécharger, elle devrait s'afficher à l'écran avec le total
-                  veuillez vérifiez qu'il n'y a pas eu d'erreur.
-                </li>
-                <li class="info">
-                  Si c'est une facture des fournisseurs LVP ou LCA en PDF,
-                  Veuillez vous rendre sur la page
-                  <a href="factureLCALVP.html" class="linkInfo"
-                    >Facture LVP et LCA</a
-                  >
-                  pour télécharger votre facture sur le logiciel. Une fois
-                  télécharger, elle devrait s'afficher à l'écran avec le total
-                  veuillez vérifiez qu'il n'y a pas eu d'erreur.
-                </li> -->
-                <li class="info">
-                  Et pour finir, rendez vous sur la page
-                  <a href="arrivage.html" class="linkInfo"
-                    >Arrivage JPR automatique</a
-                  >
-                  <!-- pour la facture JPR, ou sur la page
-                  <a href="arrivageAutreFourn.html" class="linkInfo"
-                    >Arrivage autre fournisseur
-                  </a>
-                  pour récupérer l'arrivage de JoshNoa, LVP ou LCA. -->
-                  Un tableau d'arrivage avec le total de la facture devrait
-                  s'afficher si le total de la facture est bien le même cliquez
-                  sur "Exportez Arivage" pour récupérer votre ficher d'arrivage
-                  à importer sur Hiboutik. Le fichier d'arrivage se trouve dans
-                  le dossier que vous aurrez choisi. Vour retournez sur le
-                  logiciel hiboutik vous creer l'arrivage comme vous avez
-                  l'habitude avec le numero de facture et votre nom. Une fois
-                  sur la page de l'arrivage vous descendez tout en bas, vous
-                  aurez un onglet avec écris "importez les données ref.
-                  fournisseurs" vous cliquez dessus et vous importer votre
-                  fichier d'arrivage nouvellement créer.
-                </li>
-                <li class="info">
-                  🔴 Tout en haut de la page d'arrivage sur notre logiciel, il y
-                  aura un petit encadrer qui s'affichera avec les produits qu'il
-                  faudra soit demander à créer soit à rentrer manuellement.
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h1 class="smile">ENJOY ! 😀</h1>
-            </div>
-
-            <!-- Content Row -->
+            <table class="table table-striped" id="tableRegistreAutreFourn">
+              <hr />
+              <thead>
+                <tr>
+                  <th><i class="fa fa-folder pr-2"></i> Référence</th>
+                  <th><i class="fa fa-newspaper pr-2"></i> Désignation</th>
+                  <th><i class="fa fa-euro-sign pr-2"></i> Prix Unitaire</th>
+                  <th><i class="fa fa-list pr-2"></i> Quantité</th>
+                  <th><i class="fa fa-euro-sign pr-2"></i> Prix Total</th>
+                </tr>
+              </thead>
+              <tbody id="arrivageAutreFourn-table"></tbody>
+            </table>
           </div>
         </div>
         <!-- End of Main Content -->
@@ -291,5 +252,6 @@
     <!-- Custom scripts for all pages-->
     <script src="js/sb-admin-2.min.js"></script>
     <script src="./js/app.js"></script>
+    <script src="./js/arrivageAutreFourn.js"></script>
   </body>
 </html>

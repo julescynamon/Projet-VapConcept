@@ -254,5 +254,6 @@ pdfForm.addEventListener("submit", async (event) => {
     total += parseFloat(jsonData[i].field4);
   }
   total = total.toFixed(2);
+  console.log(total);
   totalFact.textContent = "€ " + total;
 });

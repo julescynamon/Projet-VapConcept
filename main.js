@@ -31,10 +31,12 @@ function createWindow() {
   // gestion des demandes ipc
   ipc.on("reduceApp", () => {
     win.minimize();
+    if (process.platform === "darwin") app.hide();
   });
 
   ipc.on("closeApp", () => {
     win.close();
+    if (process.platform === "darwin") app.quit();
   });
 
   ipc.on("sizeApp", () => {
