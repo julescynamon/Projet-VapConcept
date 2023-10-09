@@ -75,7 +75,7 @@ function handleFormSubmit(event) {
 
           // Créez un nouveau fichier bdd.json avec le contenu JSON
           fs.writeFileSync(bddPath, JSON.stringify(jsonContent));
-
+          console.log(jsonContent);
           // Affichez un message à l'utilisateur pour indiquer que la base de données a bien été importée
           document.getElementById("bdd-success").textContent =
             "La base de données a bien été importée";

@@ -6,19 +6,23 @@
   "scripts": {
     "start": "electron .",
     "package-mac": "electron-packager . --overwrite --platform=darwin --arch=x64 --icon=./ico.icns --prune=true --out=release-builds",
+    "package-macM1": "electron-packager . --overwrite --platform=darwin --arch=universal --icon=./ico.icns --out=release-builds --verbose",
     "package-win": "electron-packager . VapConceptApp --overwrite --platform=win32 --arch=x64 --icon=./ico.ico --prune=true --out=release-builds --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"VapConcept Arrivage App\""
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@electron/universal": "^1.4.2",
     "@florpor/pdf-table-extractor": "^1.0.6",
     "csv-writer": "^1.6.0",
     "csvtojson": "^2.0.10",
-    "electron": "^24.3.0",
     "electron-dl": "^3.5.0",
     "electron-packager": "^17.1.1",
     "exceljs": "^4.3.0",
     "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "electron": "^26.3.0"
   }
 }

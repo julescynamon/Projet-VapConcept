@@ -59,7 +59,7 @@ for (let i = 0; i < fact.length; i++) {
 // Calculate the unit price for each item in fact
 for (let i = 0; i < fact.length; i++) {
   const item = fact[i];
-  item.unitPrice = (parseFloat(item.field4) / parseInt(item.field3)).toFixed(2);
+  item.unitPrice = (parseFloat(item.field4) / parseInt(item.field3)).toFixed(3);
 }
 
 // Write the modified facture.json file back to disk
@@ -159,8 +159,6 @@ downloadButton.addEventListener("click", () => {
   }, 0);
 });
 
-// TODO: ajouter une boucle pour remplacer les ref fournisseurs donc le field1 par les ref fournisseurs du fichier bdd.json en comparant la désignations des produits
-
 // une fois l'arrivage effectué on compare les references fournisseurs avec ceux dans le fichier bdd.xlsx et on affiche les references qui ne sont pas dans le fichier bdd.xlsx
 const bddPath2 = path.join(appDatatDirPath, "bdd.json");
 const bdd2 = JSON.parse(fs.readFileSync(bddPath2, "utf8"));
@@ -185,59 +183,6 @@ for (let i = 0; i < refFournisseur.length; i++) {
 
 const refNonTrouveesPath = path.join(appDatatDirPath, "refNonTrouvees.json");
 
-// Define the replacements object
-const replacements = {
-  "par 20": 20,
-  "20pcs": 20,
-  "20 pièces": 20,
-  "20 pieces": 20,
-  "par 10": 10,
-  "10 pièces": 10,
-  "10 pieces": 10,
-  "10pcs": 10,
-  "pack de 10": 10,
-  "par 2": 2,
-  "2pcs": 2,
-  "pack de 2": 2,
-  "2 pièces": 2,
-  "2 pieces": 2,
-  "par 9": 9,
-  "9pcs": 9,
-  "pack de 9": 9,
-  "9 pièces": 9,
-  "9 pieces": 9,
-  "par 12": 12,
-  "12pcs": 12,
-  "pack de 12": 12,
-  "12 pièces": 12,
-  "12 pieces": 12,
-  "par 6": 6,
-  "pack de 6": 6,
-  "6pcs": 6,
-  "6 pièces": 6,
-  "6 pieces": 6,
-  "par 5": 5,
-  "pack de 5": 5,
-  "5pcs": 5,
-  "5 pièces": 5,
-  "5 pieces": 5,
-  "par 4": 4,
-  "pack de 4": 4,
-  "4pcs": 4,
-  "4 pièces": 4,
-  "4 pieces": 4,
-  "par 3": 3,
-  "pack de 3": 3,
-  "3pcs": 3,
-  "3 pièces": 3,
-  "3 pieces": 3,
-  "par 2": 2,
-  "pack de 2": 2,
-  "2pcs": 2,
-  "2 pièces": 2,
-  "2 pieces": 2,
-};
-
 const refNonTrouvees2 = [];
 for (let i = 0; i < fact.length; i++) {
   const item = fact[i];
@@ -245,16 +190,10 @@ for (let i = 0; i < fact.length; i++) {
     continue;
   }
   if (!refBdd.includes(item.field1)) {
-    for (const [string, multiplier] of Object.entries(replacements)) {
-      if (item.field2.toLowerCase().includes(string.toLowerCase())) {
-        item.field3 = parseInt(item.field3) * multiplier;
-      }
-    }
     const newItem = {
       ref: item.field1,
       designation: item.field2,
       quantite: item.field3,
-      prixUnitaire: item.unitPrice,
       prixTotal: item.field4,
     };
     refNonTrouvees2.push(newItem);
@@ -270,12 +209,12 @@ tbody2.innerHTML = "";
 // Create a table row for each item in fact and append it to the tbody element
 for (let i = 0; i < refNonTrouvees2.length; i++) {
   const tr2 = document.createElement("tr");
-  const tdCheckbox = document.createElement("td"); // Ajout de la cellule pour la case à cocher
   const tdRef = document.createElement("td");
   const tdDesign = document.createElement("td");
-  const tdUnit = document.createElement("td");
   const tdQuantity = document.createElement("td");
   const tdTotal = document.createElement("td");
+  const tdCheckbox = document.createElement("td"); // Ajout de la cellule pour la case à cocher
+  const tdCheckboxCreate = document.createElement("td"); // Ajout de la cellule pour la case à cocher
 
   const checkbox = document.createElement("input"); // Création de la case à cocher
   checkbox.type = "checkbox"; // Définition du type de la case à cocher
@@ -288,19 +227,30 @@ for (let i = 0; i < refNonTrouvees2.length; i++) {
     }
   });
 
-  tdCheckbox.appendChild(checkbox); // Ajout de la case à cocher à la cellule correspondante
+  const checkboxCreate = document.createElement("input"); // Création de la case à cocher
+  checkboxCreate.type = "checkbox"; // Définition du type de la case à cocher
+  checkboxCreate.addEventListener("change", () => {
+    // Ajouter un gestionnaire d'événement pour détecter les changements de la case à cocher
+    if (checkboxCreate.checked) {
+      tr2.classList.add("checkboxCreate"); // Ajoutez une classe CSS pour marquer la ligne
+    } else {
+      tr2.classList.remove("checkboxCreate"); // Supprimez la classe CSS pour marquer la ligne
+    }
+  });
+
   tdRef.textContent = refNonTrouvees2[i].ref;
   tdDesign.textContent = refNonTrouvees2[i].designation;
-  tdUnit.textContent = refNonTrouvees2[i].prixUnitaire;
   tdQuantity.textContent = refNonTrouvees2[i].quantite;
   tdTotal.textContent = refNonTrouvees2[i].prixTotal;
+  tdCheckbox.appendChild(checkbox); // Ajout de la case à cocher à la cellule correspondante
+  tdCheckboxCreate.appendChild(checkboxCreate); // Ajout de la case à cocher à la cellule correspondante
 
   tr2.appendChild(tdRef);
   tr2.appendChild(tdDesign);
-  tr2.appendChild(tdUnit);
   tr2.appendChild(tdQuantity);
   tr2.appendChild(tdTotal);
-  tr2.appendChild(tdCheckbox); // Ajout de la cellule de la case à cocher à la ligne
+  tr2.appendChild(tdCheckbox); // Add the "À Rentrer" checkbox cell to the row
+  tr2.appendChild(tdCheckboxCreate); // Add the "À Créer" checkbox cell to the row
 
   tbody2.appendChild(tr2);
 }

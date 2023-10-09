@@ -94,7 +94,7 @@ function displayFactureData(csvContent) {
     const field3 = parseFloat(currentLine[2]);
     const field4 = parseFloat(currentLine[3]);
     if (!isNaN(field3) && !isNaN(field4) && field3 !== 0) {
-      const unitPrice = (field4 / field3).toFixed(2);
+      const unitPrice = (field4 / field3).toFixed(3);
       object["unitPrice"] = unitPrice;
     }
     // Si la dernière ligne est vide, ne l'ajoutez pas au tableau
