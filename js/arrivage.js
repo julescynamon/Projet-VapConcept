@@ -68,98 +68,7 @@ if (fs.existsSync(factureCopyPath)) {
 }
 fs.writeFileSync(factureCopyPath, JSON.stringify(fact));
 
-// Get the tbody element and clear its contents
-const tbody = document.getElementById("arrivage-table");
-tbody.innerHTML = "";
-
-// Create a table row for each item in fact and append it to the tbody element
-for (let i = 0; i < fact.length; i++) {
-  const tr = document.createElement("tr");
-  const td1 = document.createElement("td");
-  const td2 = document.createElement("td");
-  const td3 = document.createElement("td");
-  const td4 = document.createElement("td");
-  const td5 = document.createElement("td");
-
-  td1.textContent = fact[i].field1;
-  td2.textContent = fact[i].field2;
-  td3.textContent = fact[i].unitPrice;
-  td4.textContent = fact[i].field3;
-  td5.textContent = fact[i].field4;
-
-  tr.appendChild(td1);
-  tr.appendChild(td2);
-  tr.appendChild(td3);
-  tr.appendChild(td4);
-  tr.appendChild(td5);
-
-  tbody.appendChild(tr);
-}
-
-// Get the totalArrivage element and calculate the total price of the facture
-const totalArrivage = document.getElementById("totalArrivage");
-totalArrivage.innerHTML = "";
-let total = 0;
-for (let i = 0; i < fact.length; i++) {
-  total += parseFloat(fact[i].field4);
-}
-total = total.toFixed(2);
-totalArrivage.textContent = "€ " + total;
-
-// Create a new facture2.json file with the modified data from facture.json
-const factureModifPath2 = path.join(appDatatDirPath, "facture2.json");
-const fact2 = [];
-for (let i = 0; i < fact.length; i++) {
-  const item = fact[i];
-  fact2.push({
-    field1: item.field1,
-    field3: item.field3,
-    unitPrice: item.unitPrice,
-  });
-}
-fs.writeFileSync(factureModifPath2, JSON.stringify(fact2));
-
-// Create a new CSV file with the modified data from fact2.json
-const createCsvWriter = require("csv-writer").createObjectCsvWriter;
-const csvWriter = createCsvWriter({
-  path: path.join(__dirname, "Arrivage.csv"),
-  header: [
-    { id: "field1", title: "Field 1" },
-    { id: "field3", title: "Field 3" },
-    { id: "unitPrice", title: "Unit Price" },
-  ],
-});
-
-csvWriter
-  .writeRecords(fact2)
-  .then(() => console.log("CSV file created successfully"))
-  .catch((error) => console.error("Error creating CSV file:", error));
-
-// Enable the download button for the XLSX file
-const downloadButton = document.getElementById("btnArrivage");
-downloadButton.disabled = false;
-
-// Create a download link for the XLSX file and set the download attribute to the user's desktop path
-downloadButton.addEventListener("click", () => {
-  const file = new Blob(
-    [fs.readFileSync(path.join(__dirname, "Arrivage.csv"))],
-    {
-      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    }
-  );
-  const url = URL.createObjectURL(file);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = path.join(require("os").homedir(), "Desktop", "Arrivage.csv");
-  document.body.appendChild(a);
-  a.click();
-  setTimeout(() => {
-    document.body.removeChild(a);
-    window.URL.revokeObjectURL(url);
-  }, 0);
-});
-
-// une fois l'arrivage effectué on compare les references fournisseurs avec ceux dans le fichier bdd.xlsx et on affiche les references qui ne sont pas dans le fichier bdd.xlsx
+// on compare les references fournisseurs avec ceux dans le fichier bdd.xlsx et on affiche les references qui ne sont pas dans le fichier bdd.xlsx
 const bddPath2 = path.join(appDatatDirPath, "bdd.json");
 const bdd2 = JSON.parse(fs.readFileSync(bddPath2, "utf8"));
 
@@ -201,6 +110,16 @@ for (let i = 0; i < fact.length; i++) {
 }
 
 fs.writeFileSync(refNonTrouveesPath, JSON.stringify(refNonTrouvees2));
+
+// Get the totalRefNonTrouvee element and calculate the total price of the facture for the references that are not found in bdd.json
+const totalRefNonTrouvee = document.getElementById("totalRefNonTrouvee");
+totalRefNonTrouvee.innerHTML = "";
+let total2 = 0;
+for (let i = 0; i < refNonTrouvees2.length; i++) {
+  total2 += parseFloat(refNonTrouvees2[i].prixTotal);
+}
+total2 = total2.toFixed(2);
+totalRefNonTrouvee.textContent = "€ " + total2;
 
 // Get the tbody element and clear its contents
 const tbody2 = document.getElementById("refNotFind-table");
@@ -254,6 +173,114 @@ for (let i = 0; i < refNonTrouvees2.length; i++) {
 
   tbody2.appendChild(tr2);
 }
+
+// Get the tbody element and clear its contents
+const tbody = document.getElementById("arrivage-table");
+tbody.innerHTML = "";
+
+// Create a table row for each item in fact that is found in bdd.json and append it to the tbody element
+for (let i = 0; i < fact.length; i++) {
+  const item = fact[i];
+  const refFournisseur = item.field1;
+
+  // Check if the reference is found in bdd.json
+  if (refBdd.includes(refFournisseur)) {
+    const tr = document.createElement("tr");
+    const td1 = document.createElement("td");
+    const td2 = document.createElement("td");
+    const td3 = document.createElement("td");
+    const td4 = document.createElement("td");
+    const td5 = document.createElement("td");
+
+    td1.textContent = item.field1;
+    td2.textContent = item.field2;
+    td3.textContent = item.unitPrice;
+    td4.textContent = item.field3;
+    td5.textContent = item.field4;
+
+    tr.appendChild(td1);
+    tr.appendChild(td2);
+    tr.appendChild(td3);
+    tr.appendChild(td4);
+    tr.appendChild(td5);
+
+    tbody.appendChild(tr);
+  }
+}
+
+// Get the totalArrivage element and calculate the total price of the facture for the found references
+const totalArrivage = document.getElementById("totalArrivage");
+totalArrivage.innerHTML = "";
+let total = 0;
+for (let i = 0; i < fact.length; i++) {
+  const item = fact[i];
+  const refFournisseur = item.field1;
+
+  // Check if the reference is found in bdd.json
+  if (refBdd.includes(refFournisseur)) {
+    total += parseFloat(item.field4);
+  }
+}
+total = total.toFixed(2);
+totalArrivage.textContent = "€ " + total;
+
+// Create a new facture2.json file with the modified data from facture.json for the found references
+const factureModifPath2 = path.join(appDatatDirPath, "facture2.json");
+const fact2 = [];
+for (let i = 0; i < fact.length; i++) {
+  const item = fact[i];
+  const refFournisseur = item.field1;
+
+  // Check if the reference is found in bdd.json
+  if (refBdd.includes(refFournisseur)) {
+    fact2.push({
+      field1: item.field1,
+      field3: item.field3,
+      unitPrice: item.unitPrice,
+    });
+  }
+}
+fs.writeFileSync(factureModifPath2, JSON.stringify(fact2));
+
+// Create a new CSV file with the modified data from fact2.json
+const createCsvWriter = require("csv-writer").createObjectCsvWriter;
+const csvWriter = createCsvWriter({
+  path: path.join(appDatatDirPath, "Arrivage.csv"),
+  header: [
+    { id: "field1", title: "Field 1" },
+    { id: "field3", title: "Field 3" },
+    { id: "unitPrice", title: "Unit Price" },
+  ],
+});
+
+csvWriter
+  .writeRecords(fact2)
+  .then(() => console.log("CSV file created successfully"))
+  .catch((error) => console.error("Error creating CSV file:", error));
+
+// Enable the download button for the XLSX file
+const downloadButton = document.getElementById("btnArrivage");
+downloadButton.disabled = false;
+
+// Create a download link for the XLSX file and set the download attribute to the user's desktop path
+downloadButton.addEventListener("click", () => {
+  const file = new Blob(
+    [fs.readFileSync(path.join(appDatatDirPath, "Arrivage.csv"))],
+    {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    }
+  );
+  const url = URL.createObjectURL(file);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = path.join(require("os").homedir(), "Desktop", "Arrivage.csv");
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => {
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+  }, 0);
+});
 
 // Si on quitte la page arrivage on supprime les fichiers facture.json et facture2.json et arrivage.xlsx
 window.addEventListener("beforeunload", () => {
